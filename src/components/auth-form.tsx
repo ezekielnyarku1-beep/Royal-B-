@@ -1,0 +1,189 @@
+"use client";
+
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Check, CircleAlert, KeyRound, LoaderCircle, LockKeyhole, Mail, ShieldCheck, UserRound, X } from "lucide-react";
+import { FormField } from "./form-field";
+import { authAdapter, authErrorMessage } from "@/lib/auth";
+import { validateAuth, validateEmail, validatePasswordUpdate, type AuthMode, type AuthValues, type FieldErrors, type FieldName } from "@/lib/validation";
+
+const initialValues: AuthValues = { name: "", email: "", password: "", confirmPassword: "", remember: false };
+type Notice = { message: string; error: boolean } | null;
+
+export function AuthForm() {
+  const router = useRouter();
+  const [mode, setMode] = useState<AuthMode>("login");
+  const [values, setValues] = useState<AuthValues>(initialValues);
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
+  const [pending, setPending] = useState(false);
+  const [notice, setNotice] = useState<Notice>(null);
+  const [recoveringPassword, setRecoveringPassword] = useState(false);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const login = mode === "login";
+
+  useEffect(() => {
+    try {
+      return authAdapter.onAuthStateChange(event => {
+        if (event === "PASSWORD_RECOVERY") setRecoveringPassword(true);
+      });
+    } catch (error) {
+      setNotice({ message: authErrorMessage(error), error: true });
+    }
+  }, []);
+
+  function switchMode(next: AuthMode) {
+    if (next === mode || pending) return;
+    setMode(next); setErrors({}); setTouched({}); setNotice(null);
+    setValues(v => ({ ...v, password: "", confirmPassword: "", remember: false }));
+  }
+
+  function handleTabKey(event: KeyboardEvent<HTMLButtonElement>) {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const next = event.key === "Home" ? "login" : event.key === "End" ? "signup" : login ? "signup" : "login";
+    switchMode(next);
+    document.getElementById(`tab-${next}`)?.focus();
+  }
+
+  function fieldProps(field: FieldName) {
+    return {
+      id: field, name: field, value: values[field], required: true, error: errors[field], disabled: pending,
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+        const next = { ...values, [field]: event.target.value };
+        setValues(next); setNotice(null);
+        const validated = validateAuth(next, mode);
+        setErrors(previous => {
+          const updated = { ...previous };
+          for (const key of Object.keys(touched) as FieldName[]) updated[key] = validated[key];
+          return updated;
+        });
+      },
+      onBlur: () => {
+        setTouched(t => ({ ...t, [field]: true }));
+        setErrors(e => ({ ...e, [field]: validateAuth(values, mode)[field] }));
+      },
+    };
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (pending) return;
+    const validated = validateAuth(values, mode);
+    setErrors(validated); setTouched({ name: true, email: true, password: true, confirmPassword: true }); setNotice(null);
+    if (Object.keys(validated).length) {
+      const order: FieldName[] = login ? ["email", "password"] : ["name", "email", "password", "confirmPassword"];
+      document.getElementById(order.find(k => validated[k])!)?.focus();
+      return;
+    }
+    setPending(true);
+    try {
+      const result = login
+        ? await authAdapter.signIn({ email: values.email.trim(), password: values.password, remember: values.remember })
+        : await authAdapter.signUp({ name: values.name.trim(), email: values.email.trim(), password: values.password });
+      if (login) router.replace("/shop/");
+      else setNotice({ message: result.message, error: false });
+    } catch (error) { setNotice({ message: authErrorMessage(error), error: true }); }
+    finally { setPending(false); setValues(v => ({ ...v, password: "", confirmPassword: "" })); }
+  }
+
+  if (recoveringPassword) {
+    return <PasswordRecoveryForm onComplete={() => setRecoveringPassword(false)} />;
+  }
+
+  return <div className="auth-content">
+    <div className="welcome-icon" aria-hidden="true"><LockKeyhole size={23} strokeWidth={1.5}/><span><Check size={9} strokeWidth={3}/></span></div>
+    <div className="auth-heading"><div className="form-eyebrow">YOUR ROYAL SPACE</div><h2>{login ? "Welcome back." : "Make yourself at home."}</h2><p>{login ? "A world of great finds is waiting for you." : "Your next favourite find starts right here."}</p></div>
+    <div className={`auth-tabs ${!login ? "signup-active" : ""}`} role="tablist" aria-label="Account access">
+      <span className="tab-indicator" aria-hidden="true"/>
+      <button type="button" role="tab" id="tab-login" aria-selected={login} aria-controls="auth-panel" tabIndex={login ? 0 : -1} onKeyDown={handleTabKey} onClick={() => switchMode("login")} disabled={pending}>Log in</button>
+      <button type="button" role="tab" id="tab-signup" aria-selected={!login} aria-controls="auth-panel" tabIndex={login ? -1 : 0} onKeyDown={handleTabKey} onClick={() => switchMode("signup")} disabled={pending}>Sign up</button>
+    </div>
+    <div id="auth-panel" role="tabpanel" aria-labelledby={`tab-${mode}`} tabIndex={0}>
+      <form key={mode} className="auth-form" noValidate onSubmit={submit} aria-busy={pending}>
+        {!login && <FormField {...fieldProps("name")} label="Full name" icon={UserRound} placeholder="Enter your full name" autoComplete="name" maxLength={100}/>}
+        <FormField {...fieldProps("email")} label="Email address" icon={Mail} type="email" placeholder="you@example.com" autoComplete="email" inputMode="email" autoCapitalize="none" spellCheck={false} maxLength={254}/>
+        <FormField {...fieldProps("password")} label="Password" icon={LockKeyhole} type="password" placeholder={login ? "Enter your password" : "Create a password"} autoComplete={login ? "current-password" : "new-password"} hint={!login ? "Use at least 8 characters." : undefined}/>
+        {!login && <FormField {...fieldProps("confirmPassword")} label="Confirm password" icon={LockKeyhole} type="password" placeholder="Re-enter your password" autoComplete="new-password"/>}
+        {login && <div className="form-options"><label className="remember"><input type="checkbox" checked={values.remember} disabled={pending} onChange={e => setValues(v => ({ ...v, remember: e.target.checked }))}/><span>Remember me</span></label><button className="text-button" type="button" onClick={() => dialog.current?.showModal()}>Forgot password?</button></div>}
+        <div aria-live="polite" aria-atomic="true">{notice && <div className={`form-notice ${notice.error ? "notice-error" : ""}`}><CircleAlert size={17} aria-hidden="true"/><p>{notice.message}</p></div>}</div>
+        <button type="submit" className="primary-button" disabled={pending}>{pending ? <><LoaderCircle size={18} className="animate-spin"/>Please wait…</> : <>{login ? "Log in" : "Create account"}<ArrowRight size={18}/></>}</button>
+      </form>
+    </div>
+    <p className="switch-prompt">{login ? "New to the royal family?" : "Already part of the royal family?"} <button type="button" className="text-button" disabled={pending} onClick={() => { switchMode(login ? "signup" : "login"); document.getElementById(login ? "tab-signup" : "tab-login")?.focus(); }}>{login ? "Create an account" : "Log in"}<ArrowRight size={13}/></button></p>
+    <div className="security-note"><ShieldCheck size={16} strokeWidth={1.6}/><span>Your details deserve the royal treatment.</span></div>
+    <ResetPasswordDialog dialogRef={dialog} email={values.email}/>
+  </div>;
+}
+
+function PasswordRecoveryForm({ onComplete }: { onComplete: () => void }) {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [pending, setPending] = useState(false);
+  const [notice, setNotice] = useState<Notice>(null);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (pending) return;
+    const validated = validatePasswordUpdate(password, confirmPassword);
+    setErrors(validated);
+    setNotice(null);
+    if (Object.keys(validated).length) {
+      document.getElementById(validated.password ? "recovery-password" : "recovery-confirm-password")?.focus();
+      return;
+    }
+
+    setPending(true);
+    try {
+      const result = await authAdapter.updatePassword({ password });
+      setNotice({ message: result.message, error: false });
+      setPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      setNotice({ message: authErrorMessage(error), error: true });
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return <div className="auth-content">
+    <div className="welcome-icon" aria-hidden="true"><LockKeyhole size={23} strokeWidth={1.5}/><span><Check size={9} strokeWidth={3}/></span></div>
+    <div className="auth-heading"><div className="form-eyebrow">YOUR ROYAL SPACE</div><h2>Choose a new password.</h2><p>Set a new password to get back to your account.</p></div>
+    <form className="auth-form" noValidate onSubmit={submit} aria-busy={pending}>
+      <FormField id="recovery-password" name="password" label="New password" icon={LockKeyhole} type="password" value={password} placeholder="Create a new password" autoComplete="new-password" hint="Use at least 8 characters." required disabled={pending} error={errors.password} onChange={event => { setPassword(event.target.value); setErrors(previous => ({ ...previous, password: undefined })); setNotice(null); }} />
+      <FormField id="recovery-confirm-password" name="confirmPassword" label="Confirm new password" icon={LockKeyhole} type="password" value={confirmPassword} placeholder="Re-enter your new password" autoComplete="new-password" required disabled={pending} error={errors.confirmPassword} onChange={event => { setConfirmPassword(event.target.value); setErrors(previous => ({ ...previous, confirmPassword: undefined })); setNotice(null); }} />
+      <div aria-live="polite" aria-atomic="true">{notice && <div className={`form-notice ${notice.error ? "notice-error" : ""}`}><CircleAlert size={17} aria-hidden="true"/><p>{notice.message}</p></div>}</div>
+      {notice?.error === false
+        ? <button type="button" className="primary-button" onClick={onComplete}>Back to log in<ArrowRight size={18}/></button>
+        : <button type="submit" className="primary-button" disabled={pending}>{pending ? <><LoaderCircle size={18} className="animate-spin"/>Please wait…</> : <>Update password<ArrowRight size={18}/></>}</button>}
+    </form>
+  </div>;
+}
+
+function ResetPasswordDialog({ dialogRef, email }: { dialogRef: React.RefObject<HTMLDialogElement | null>; email: string }) {
+  const [value, setValue] = useState("");
+  const [error, setError] = useState<string>();
+  const [notice, setNotice] = useState<Notice>(null);
+  const [pending, setPending] = useState(false);
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); if (pending) return;
+    const invalid = validateEmail(value); setError(invalid); setNotice(null);
+    if (invalid) { document.getElementById("reset-email")?.focus(); return; }
+    setPending(true);
+    try { const result = await authAdapter.resetPassword({ email: value.trim() }); setNotice({ message: result.message, error: false }); }
+    catch (error) { setNotice({ message: authErrorMessage(error), error: true }); }
+    finally { setPending(false); }
+  }
+  return <dialog className="reset-dialog" ref={dialogRef} aria-labelledby="reset-title" aria-describedby="reset-description" onClose={() => { setValue(""); setError(undefined); setNotice(null); }} onClick={event => { if (event.target === event.currentTarget) { const rect = event.currentTarget.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) event.currentTarget.close(); } }}>
+    <button type="button" className="dialog-close" aria-label="Close password reset" onClick={() => dialogRef.current?.close()}><X size={20}/></button>
+    <div className="reset-icon"><KeyRound size={25}/></div>
+    <h2 id="reset-title">A fresh start.</h2><p id="reset-description">Enter your email and we’ll help you get back to your royal space.</p>
+    <form noValidate onSubmit={submit} aria-busy={pending}>
+      <FormField id="reset-email" label="Email address" icon={Mail} type="email" value={value} autoComplete="email" placeholder={email || "you@example.com"} onChange={e => { setValue(e.target.value); setError(undefined); setNotice(null); }} error={error} required disabled={pending}/>
+      <div aria-live="polite" aria-atomic="true">{notice && <div className={`form-notice ${notice.error ? "notice-error" : ""}`}><CircleAlert size={17}/><p>{notice.message}</p></div>}</div>
+      <button className="primary-button" type="submit" disabled={pending}>{pending ? "Please wait…" : "Send reset link"}<ArrowRight size={18}/></button>
+    </form>
+    <button className="text-button back-button" type="button" onClick={() => dialogRef.current?.close()}>Back to log in</button>
+  </dialog>;
+}
