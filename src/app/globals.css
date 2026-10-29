@@ -90,6 +90,8 @@ button:disabled { cursor: wait; opacity: .65; }
 .form-notice { display: flex; align-items: flex-start; gap: 8px; padding: 12px; border-radius: 7px; background: #f2f5fc; color: #405780; font-size: 11px; line-height: 1.6; border: 1px solid #e0e6f3; }
 .form-notice svg { flex-shrink: 0; margin-top: 1px; }
 .form-notice p { margin: 0; }
+.auth-error-reference { display: block; font-size: 10px; margin-top: 5px; color: #53617a; overflow-wrap: anywhere; }
+.notice-error { background: #fff6f5; border-color: #e7c0ba; color: #8d3030; }
 .reset-dialog { position: fixed; inset: 0; margin: auto; width: min(430px, calc(100% - 32px)); border: 1px solid #e5e8ef; border-radius: 18px; padding: 35px; color: var(--ink); box-shadow: 0 25px 90px #111d3333; max-height: calc(100svh - 40px); overflow-y: auto; }
 .reset-dialog::backdrop { background: #14224e80; backdrop-filter: blur(4px); }
 .reset-dialog[open] { animation: reveal .2s ease; }
@@ -112,6 +114,14 @@ button:disabled { cursor: wait; opacity: .65; }
 .page-footer { font-size: 10px; }
 .account-store-link { color: var(--blue); font-weight: 550; padding: 8px 0; text-decoration: none; }
 .account-store-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.account-details { background: #f5f7fc; border: 1px solid #e4e8f1; border-radius: 7px; padding: 17px; margin-top: 25px; }
+.account-summary .auth-heading p { overflow-wrap: anywhere; }
+.account-details > span { color: #626b7c; font-size: 11px; }
+.account-details > p { color: var(--blue); font-size: 14px; font-weight: 550; margin: 7px 0 0; overflow-wrap: anywhere; }
+.account-continue { margin-top: 22px; text-decoration: none; }
+.account-signout { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; min-height: 46px; border: 1px solid #dce2ef; background: white; color: var(--blue); font-size: 13px; border-radius: 7px; margin-top: 12px; }
+.account-signout:hover:not(:disabled) { background: #f5f7fc; border-color: var(--blue); }
+.account-session-note { color: #626b7c; font-size: 11px; line-height: 1.8; text-align: center; margin: 22px 0 0; }
 .reset-dialog > p { color: #6b7280; }
 @keyframes reveal { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 @media (min-width: 1500px) { .brand-panel { padding-left: 65px; padding-right: 65px; } .brand-story { margin-top: 100px; } .auth-content { max-width: 420px; } .auth-heading h2 { font-size: 36px; } .art-wrap { margin-left: -25px; margin-right: -25px; } }
@@ -119,4 +129,15 @@ button:disabled { cursor: wait; opacity: .65; }
 @media (max-width: 1100px) { .brand-panel { padding-left: 30px; padding-right: 30px; } .form-side { padding-left: 27px; padding-right: 27px; } .auth-page { grid-template-columns: 45% 1fr; } .art-wrap { margin-left: -35px; margin-right: -35px; } .art-note { width: 80%; left: 10%; } .brand-story h1 { font-size: 46px; } }
 @media (max-width: 800px) { .auth-page { display: block; padding: 0; } .brand-panel { display: none; } .form-side { min-height: 100svh; padding: 25px 30px 20px; } .form-header { justify-content: space-between; gap: 16px; } .mobile-logo { display: block; } .brand-logo { gap: 5px; } .logo-wordmark { font-size: 14px; letter-spacing: .7px; } .logo-wordmark small { font-size: 5.5px; letter-spacing: 1.3px; } .logo-mark { width: 32px; } .logo-mark > span { font-size: 29px; line-height: 30px; } .logo-mark > svg { width: 17px; } .ghana-badge { font-size: 9px; gap: 6px; } .form-stage { padding: 55px 0; } .auth-content { max-width: 410px; } .auth-heading h2 { font-size: 32px; } .field label, .text-button, .remember, .switch-prompt { font-size: 12px; } .auth-heading p, .primary-button, .auth-tabs button { font-size: 13px; } .input-wrap input { font-size: 16px; height: 51px; } .password-toggle { top: 4px; } .security-note { font-size: 10px; } .page-footer { font-size: 10px; } }
 @media (max-width: 380px) { .form-side { padding: 20px; } .ghana-badge { font-size: 8px; } .auth-heading h2 { font-size: 28px; } .form-stage { padding-top: 40px; } .reset-dialog { padding: 28px 22px; } }
+@media (max-width: 800px) {
+  .form-side { padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(20px, env(safe-area-inset-bottom)); padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
+  .form-stage { padding-block: 30px; }
+  .welcome-icon { margin-bottom: 18px; }
+  .auth-tabs button { height: 44px; font-size: 14px; }
+  .password-toggle { width: 44px; height: 44px; top: 3px; }
+  .text-button, .remember, .account-store-link { min-height: 44px; }
+  .text-button, .remember, .switch-prompt { font-size: 13px; }
+  .field-hint, .field-error, .form-notice { font-size: 12px; line-height: 1.6; }
+  .dialog-close { width: 44px; height: 44px; }
+}
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

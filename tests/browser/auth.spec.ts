@@ -29,6 +29,10 @@ async function mockSuccessfulSignIn(page: import("@playwright/test").Page) {
   const timestamp = new Date(now * 1000).toISOString();
 
   await page.route("https://gangouwtzbymjlmlumiu.supabase.co/**", async route => {
+    if (new URL(route.request().url()).pathname.endsWith("/logout")) {
+      await route.fulfill({ status: 204, body: "" });
+      return;
+    }
     if (new URL(route.request().url()).pathname.endsWith("/token")) {
       await route.fulfill({
         status: 200,
@@ -142,6 +146,40 @@ test("login returns shoppers to the store with their custom bag intact", async (
   expect(errors).toEqual([]);
 });
 
+test("signed-in shoppers can view their account, reload and sign out without losing their bag", async ({ page, isMobile }) => {
+  await mockSuccessfulSignIn(page);
+  await page.goto("/shop/");
+  await page.getByRole("button", { name: "Choose options for Customized Bracelets", exact: true }).click();
+  await page.getByRole("button", { name: "Add to bag", exact: true }).click();
+  await page.getByRole("link", { name: "Log in or sign up" }).click();
+  await page.getByRole("textbox", { name: "Email address", exact: true }).fill("ama@example.com");
+  await page.getByLabel("Password", { exact: true }).fill("test-only passphrase");
+  await page.getByText("Remember me", { exact: true }).click();
+  await page.getByRole("button", { name: "Log in", exact: true }).click();
+  await expect(page).toHaveURL(/\/shop\//);
+  await page.getByRole("link", { name: "Your account", exact: true }).first().click();
+  await expect(page.getByRole("heading", { name: "Your royal space." })).toBeVisible();
+  await expect(page.getByText("ama@example.com", { exact: true })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Log in", exact: true })).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Your royal space." })).toBeVisible();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+  if (isMobile) await page.screenshot({ path: path.resolve(".sites-runtime/previews/mobile-check/account.png"), fullPage: true, animations: "disabled" });
+  const logout = page.waitForRequest(request => new URL(request.url()).pathname.endsWith("/logout"));
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  expect(new URL((await logout).url()).searchParams.get("scope")).toBe("local");
+  await expect(page.getByRole("tab", { name: "Log in", exact: true })).toBeVisible();
+  const cookies = await page.context().cookies("http://localhost:3000");
+  expect(cookies.some(cookie => cookie.name.startsWith("sb-") && cookie.name.includes("auth-token"))).toBe(false);
+  expect(cookies.some(cookie => cookie.name === "bbr-remember-session")).toBe(false);
+  await page.reload();
+  await expect(page.getByRole("tab", { name: "Log in", exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Visit the store" }).click();
+  await expect(page.getByRole("button", { name: "Open shopping bag, 1 item" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Log in or sign up" })).toBeVisible();
+});
+
 test("signup validates confirmation and clears passwords between tabs", async ({ page }) => {
   await mockSupabaseAuth(page);
   await page.goto("/");
@@ -236,7 +274,9 @@ test("recovery links let a user set a new password", async ({ page }) => {
   await page.getByRole("textbox", { name: "New password", exact: true }).fill("a new secure passphrase");
   await page.getByRole("textbox", { name: "Confirm new password", exact: true }).fill("a new secure passphrase");
   await page.getByRole("button", { name: "Update password" }).click();
-  await expect(page.getByText("Your password has been updated. You can now return to log in.")).toBeVisible();
+  await expect(page.getByText("Your password has been updated.")).toBeVisible();
+  await page.getByRole("button", { name: "Continue to your account" }).click();
+  await expect(page.getByRole("heading", { name: "Your royal space." })).toBeVisible();
 });
 
 test("tabs support keyboard navigation and layouts have no overflow", async ({ page }) => {

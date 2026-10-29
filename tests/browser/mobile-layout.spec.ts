@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { products } from "../../src/lib/catalogue";
 
 test("mobile and tablet layouts fit login, signup, product options and bag", async ({ page, isMobile }) => {
   test.skip(!isMobile, "This check exercises mobile and tablet viewports.");
@@ -15,7 +16,7 @@ test("mobile and tablet layouts fit login, signup, product options and bag", asy
     await expect(page.getByRole("button", { name: "Create account", exact: true })).toBeVisible();
     expect(await fitsPage(), `Signup fits ${width}px`).toBe(true);
     await page.getByRole("link", { name: "Visit the store" }).click();
-    await expect(page.locator(".product-card")).toHaveCount(8);
+    await expect(page.locator(".product-card")).toHaveCount(products.length);
     expect(await fitsPage(), `Store fits ${width}px`).toBe(true);
     await page.getByRole("button", { name: "Choose options for Customized Bracelets", exact: true }).click();
     await expect(page.getByRole("dialog", { name: "Customized Bracelets" })).toBeVisible();

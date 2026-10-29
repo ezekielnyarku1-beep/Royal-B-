@@ -4,14 +4,17 @@ import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check, CircleAlert, KeyRound, LoaderCircle, LockKeyhole, Mail, ShieldCheck, UserRound, X } from "lucide-react";
 import { FormField } from "./form-field";
-import { authAdapter, authErrorMessage } from "@/lib/auth";
+import { authAdapter, authErrorMessage, authErrorReference } from "@/lib/auth";
+import { useAccount } from "@/hooks/use-account";
+import { AccountSummary } from "./account-summary";
 import { validateAuth, validateEmail, validatePasswordUpdate, type AuthMode, type AuthValues, type FieldErrors, type FieldName } from "@/lib/validation";
 
 const initialValues: AuthValues = { name: "", email: "", password: "", confirmPassword: "", remember: false };
-type Notice = { message: string; error: boolean } | null;
+type Notice = { message: string; error: boolean; reference?: string } | null;
 
 export function AuthForm() {
   const router = useRouter();
+  const account = useAccount();
   const [mode, setMode] = useState<AuthMode>("login");
   const [values, setValues] = useState<AuthValues>(initialValues);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -26,6 +29,9 @@ export function AuthForm() {
     try {
       return authAdapter.onAuthStateChange(event => {
         if (event === "PASSWORD_RECOVERY") setRecoveringPassword(true);
+        if (event === "SIGNED_OUT") {
+          setMode("login"); setValues(initialValues); setErrors({}); setTouched({}); setNotice(null); setRecoveringPassword(false);
+        }
       });
     } catch (error) {
       setNotice({ message: authErrorMessage(error), error: true });
@@ -81,15 +87,17 @@ export function AuthForm() {
       const result = login
         ? await authAdapter.signIn({ email: values.email.trim(), password: values.password, remember: values.remember })
         : await authAdapter.signUp({ name: values.name.trim(), email: values.email.trim(), password: values.password });
-      if (login) router.replace("/shop/");
+      if (login || result.authenticated) router.replace("/shop/");
       else setNotice({ message: result.message, error: false });
-    } catch (error) { setNotice({ message: authErrorMessage(error), error: true }); }
+    } catch (error) { setNotice({ message: authErrorMessage(error), error: true, reference: authErrorReference(error) }); }
     finally { setPending(false); setValues(v => ({ ...v, password: "", confirmPassword: "" })); }
   }
 
   if (recoveringPassword) {
     return <PasswordRecoveryForm onComplete={() => setRecoveringPassword(false)} />;
   }
+  if (account.loading) return <div className="auth-content" role="status">Checking your account…</div>;
+  if (account.user) return <AccountSummary user={account.user}/>;
 
   return <div className="auth-content">
     <div className="welcome-icon" aria-hidden="true"><LockKeyhole size={23} strokeWidth={1.5}/><span><Check size={9} strokeWidth={3}/></span></div>
@@ -106,7 +114,7 @@ export function AuthForm() {
         <FormField {...fieldProps("password")} label="Password" icon={LockKeyhole} type="password" placeholder={login ? "Enter your password" : "Create a password"} autoComplete={login ? "current-password" : "new-password"} hint={!login ? "Use at least 8 characters." : undefined}/>
         {!login && <FormField {...fieldProps("confirmPassword")} label="Confirm password" icon={LockKeyhole} type="password" placeholder="Re-enter your password" autoComplete="new-password"/>}
         {login && <div className="form-options"><label className="remember"><input type="checkbox" checked={values.remember} disabled={pending} onChange={e => setValues(v => ({ ...v, remember: e.target.checked }))}/><span>Remember me</span></label><button className="text-button" type="button" onClick={() => dialog.current?.showModal()}>Forgot password?</button></div>}
-        <div aria-live="polite" aria-atomic="true">{notice && <div className={`form-notice ${notice.error ? "notice-error" : ""}`}><CircleAlert size={17} aria-hidden="true"/><p>{notice.message}</p></div>}</div>
+        <div aria-live="polite" aria-atomic="true">{notice && <div className={`form-notice ${notice.error ? "notice-error" : ""}`}><CircleAlert size={17} aria-hidden="true"/><p>{notice.message}{notice.reference && <small className="auth-error-reference">Support reference: {notice.reference}</small>}</p></div>}</div>
         <button type="submit" className="primary-button" disabled={pending}>{pending ? <><LoaderCircle size={18} className="animate-spin"/>Please wait…</> : <>{login ? "Log in" : "Create account"}<ArrowRight size={18}/></>}</button>
       </form>
     </div>
@@ -155,7 +163,7 @@ function PasswordRecoveryForm({ onComplete }: { onComplete: () => void }) {
       <FormField id="recovery-confirm-password" name="confirmPassword" label="Confirm new password" icon={LockKeyhole} type="password" value={confirmPassword} placeholder="Re-enter your new password" autoComplete="new-password" required disabled={pending} error={errors.confirmPassword} onChange={event => { setConfirmPassword(event.target.value); setErrors(previous => ({ ...previous, confirmPassword: undefined })); setNotice(null); }} />
       <div aria-live="polite" aria-atomic="true">{notice && <div className={`form-notice ${notice.error ? "notice-error" : ""}`}><CircleAlert size={17} aria-hidden="true"/><p>{notice.message}</p></div>}</div>
       {notice?.error === false
-        ? <button type="button" className="primary-button" onClick={onComplete}>Back to log in<ArrowRight size={18}/></button>
+        ? <button type="button" className="primary-button" onClick={onComplete}>Continue to your account<ArrowRight size={18}/></button>
         : <button type="submit" className="primary-button" disabled={pending}>{pending ? <><LoaderCircle size={18} className="animate-spin"/>Please wait…</> : <>Update password<ArrowRight size={18}/></>}</button>}
     </form>
   </div>;
