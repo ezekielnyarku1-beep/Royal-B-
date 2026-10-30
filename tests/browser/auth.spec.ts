@@ -64,7 +64,7 @@ async function mockSuccessfulSignIn(page: import("@playwright/test").Page) {
 
 test("validates, toggles passwords, and never simulates authentication", async ({ page }) => {
   await mockSupabaseAuth(page);
-  await page.goto("/");
+  await page.goto("/login/");
   await page.getByRole("button", { name: "Log in", exact: true }).click();
   await expect(page.getByText("Please enter your email address.")).toBeVisible();
   await expect(page.getByRole("textbox", { name: "Email address", exact: true })).toBeFocused();
@@ -77,13 +77,13 @@ test("validates, toggles passwords, and never simulates authentication", async (
   await page.getByRole("button", { name: "Log in", exact: true }).click();
   await expect(page.getByText(/We couldn't complete that request/)).toBeVisible();
   await expect(page.getByLabel("Password", { exact: true })).toHaveValue("");
-  expect(new URL(page.url()).pathname).toBe("/");
+  expect(new URL(page.url()).pathname).toBe("/login/");
   expect(await page.evaluate(() => localStorage.length)).toBe(0);
 });
 
 test("remember me controls whether Supabase session cookies persist", async ({ page }) => {
   await mockSuccessfulSignIn(page);
-  await page.goto("/");
+  await page.goto("/login/");
   await page.getByRole("textbox", { name: "Email address", exact: true }).fill("ama@example.com");
   await page.getByLabel("Password", { exact: true }).fill("secure passphrase");
   await page.getByText("Remember me", { exact: true }).click();
@@ -96,7 +96,7 @@ test("remember me controls whether Supabase session cookies persist", async ({ p
   expect(rememberedCookies.find(cookie => cookie.name === "bbr-remember-session")?.value).toBe("1");
 
   await page.context().clearCookies();
-  await page.goto("/");
+  await page.goto("/login/");
   await page.getByRole("textbox", { name: "Email address", exact: true }).fill("ama@example.com");
   await page.getByLabel("Password", { exact: true }).fill("secure passphrase");
   await page.getByRole("button", { name: "Log in", exact: true }).click();
@@ -183,7 +183,7 @@ test("signed-in shoppers can view their account, reload and sign out without los
 
 test("signup validates confirmation and clears passwords between tabs", async ({ page }) => {
   await mockSupabaseAuth(page);
-  await page.goto("/");
+  await page.goto("/login/");
   await page.getByRole("tab", { name: "Sign up" }).click();
   await page.getByLabel("Full name").fill("Ama Mensah");
   await page.getByRole("textbox", { name: "Email address", exact: true }).fill("ama@example.com");
@@ -197,12 +197,12 @@ test("signup validates confirmation and clears passwords between tabs", async ({
   await page.getByRole("tab", { name: "Log in" }).click();
   await expect(page.getByLabel("Password", { exact: true })).toHaveValue("");
   await expect(page.getByLabel("Full name")).toHaveCount(0);
-  expect(new URL(page.url()).pathname).toBe("/");
+  expect(new URL(page.url()).pathname).toBe("/login/");
 });
 
 test("reset dialog validates, traps focus, and closes with Escape", async ({ page }) => {
   await mockSupabaseAuth(page);
-  await page.goto("/");
+  await page.goto("/login/");
   const trigger = page.getByRole("button", { name: "Forgot password?" });
   await trigger.click();
   const dialog = page.getByRole("dialog");
@@ -265,12 +265,13 @@ test("recovery links let a user set a new password", async ({ page }) => {
     await route.fulfill({ status: 400, contentType: "application/json", body: "{}" });
   });
 
-  await page.goto("/");
+  await page.goto("/login/");
   await page.getByRole("button", { name: "Forgot password?" }).click();
   await page.getByRole("dialog").getByLabel("Email address").fill("ama@example.com");
   await page.getByRole("button", { name: "Send reset link" }).click();
   await expect(page.getByText(/If an account exists for this email/)).toBeVisible();
   await page.goto("/?code=mock-recovery-code");
+  await expect(page).toHaveURL(/\/login\//);
   await expect(page.getByRole("heading", { name: "Choose a new password." })).toBeVisible();
   await page.getByRole("textbox", { name: "New password", exact: true }).fill("a new secure passphrase");
   await page.getByRole("textbox", { name: "Confirm new password", exact: true }).fill("a new secure passphrase");
@@ -281,7 +282,7 @@ test("recovery links let a user set a new password", async ({ page }) => {
 });
 
 test("tabs support keyboard navigation and layouts have no overflow", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/login/");
   await page.getByRole("tab", { name: "Log in" }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("tab", { name: "Sign up" })).toBeFocused();
@@ -291,7 +292,7 @@ test("tabs support keyboard navigation and layouts have no overflow", async ({ p
 
 test("both modes and reset dialog pass WCAG AA automated checks", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/login/");
   const scan = () => new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
   expect((await scan()).violations).toEqual([]);
   await page.getByRole("tab", { name: "Sign up" }).click();

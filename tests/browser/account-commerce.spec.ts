@@ -37,7 +37,7 @@ async function fixture(page: Page, owner = false) {
     else if (url.pathname.endsWith("/store_order_events")) data = [{ id: 1, status: "requested", note: "", created_at: new Date().toISOString() }];
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(data) });
   });
-  await page.goto("/");
+  await page.goto("/login/");
   await page.getByRole("textbox", { name: "Email address", exact: true }).fill(user.email);
   await page.getByLabel("Password", { exact: true }).fill("testing passphrase");
   await page.getByRole("button", { name: "Log in", exact: true }).click();

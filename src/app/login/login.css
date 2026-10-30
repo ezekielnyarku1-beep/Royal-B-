@@ -1,0 +1,80 @@
+.login-redesign.auth-page{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:0;padding:0;min-height:100svh;background:#f5f7fc}
+.login-redesign :focus-visible{outline:3px solid #091a73;outline-offset:4px}
+.login-founder-panel :focus-visible{outline-color:#d4a73b}
+.login-founder-panel{display:flex;flex-direction:column;align-items:flex-start;background:#091a73;color:white;padding:36px clamp(28px,4.5vw,72px);min-width:0}
+.login-founder-logo{display:inline-flex;align-items:center;min-height:48px;text-decoration:none}
+.login-founder-story{margin-top:38px;max-width:440px}
+.login-founder-label{display:flex;align-items:center;gap:12px;font-size:14px;margin:0 0 20px;color:#e2e8fa}
+.login-founder-label::before{content:"";width:28px;height:2px;background:#d4a73b}
+.login-founder-story h1{font-family:"Manrope",Arial,sans-serif;font-size:clamp(30px,3.3vw,48px);line-height:1.2;font-weight:500;letter-spacing:-1.5px;margin:0}
+.login-founder-story h1 em{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:1.12em}
+.login-founder-story>p:last-child{font-size:16px;line-height:1.85;margin:22px 0 0;color:#e2e8fa}
+.login-founder-portrait{width:clamp(170px,25svh,260px);max-width:100%;margin:30px auto 0}
+.login-founder-portrait img{width:100%;height:auto;display:block;border-radius:6px;outline:1px solid #ffffff36;outline-offset:6px}
+.login-founder-portrait figcaption{padding-top:20px;line-height:1.6;text-align:center}
+.login-founder-portrait figcaption strong{display:block;font-size:15px;font-weight:600}
+.login-founder-portrait figcaption span{display:block;font-size:14px;color:#e2e8fa;margin-top:5px}
+.login-founder-more{display:inline-flex;align-items:center;gap:12px;min-height:44px;margin:24px auto 0;color:white;text-underline-offset:5px;font-size:14px}
+.login-founder-more svg{transform:rotate(180deg)}
+.login-redesign .form-side{padding:28px clamp(24px,4vw,64px) 20px;min-height:100svh;background:transparent}
+.login-redesign .form-header{justify-content:flex-end;min-height:44px}
+.login-home-link{display:inline-flex;align-items:center;gap:9px;min-height:44px;color:#091a73;font-size:15px;text-decoration:none}
+.login-home-link:hover{text-decoration:underline;text-underline-offset:5px}
+.login-mobile-brand,.login-mobile-label{display:none}
+.login-redesign .form-stage{padding:36px 0;align-items:center}
+.login-redesign .auth-content{max-width:460px;padding:36px;background:white;border:1px solid #dfe5f0;border-radius:18px;box-shadow:0 14px 45px #091a7308}
+.login-redesign .welcome-icon{display:none}
+.login-redesign .auth-heading h2{font-family:Georgia,"Times New Roman",serif;font-size:40px;font-weight:400;letter-spacing:-1.2px;line-height:1.2;color:#091a73}
+.login-redesign .auth-heading p{font-size:16px;color:#536078;line-height:1.7;margin-top:12px}
+.login-redesign .auth-tabs{margin:28px 0;background:#edf1f9;border-radius:10px;padding:5px}
+.login-redesign .auth-tabs button{height:46px;font-size:16px;color:#536078;border-radius:7px}
+.login-redesign .auth-tabs button[aria-selected=true]{color:white}
+.login-redesign .tab-indicator{top:5px;bottom:5px;left:5px;width:calc(50% - 5px);border-radius:7px;background:#091a73;box-shadow:none}
+.login-redesign .auth-form{gap:21px}
+.login-redesign .field label{font-size:15px;color:#25334d;margin-bottom:9px}
+.login-redesign .input-wrap{border:1px solid #aebbd0;border-radius:9px;background:white}
+.login-redesign .input-wrap:focus-within{border-color:#091a73;box-shadow:0 0 0 3px #091a7312}
+.login-redesign .input-wrap input{height:54px;font-size:16px;padding-left:44px;color:#14203e}
+.login-redesign .input-wrap input.has-toggle{padding-right:50px}
+.login-redesign .input-wrap input::placeholder{color:#657187}
+.login-redesign .input-icon{color:#657187}
+.login-redesign .password-toggle{width:44px;height:44px;top:4px;right:4px;color:#536078}
+.login-redesign .input-error{border-color:#b23d3d}
+.login-redesign .field-error,.login-redesign .field-hint{font-size:14px;line-height:1.6}
+.login-redesign .form-options{gap:8px;flex-wrap:wrap;margin-block:-3px 0}
+.login-redesign .remember,.login-redesign .text-button{font-size:14px;min-height:44px}
+.login-redesign .remember{gap:9px;color:#536078}
+.login-redesign .remember input{width:19px;height:19px;flex-shrink:0}
+.login-redesign .primary-button{height:auto;min-height:54px;font-size:16px;font-weight:600;border-radius:9px;padding:12px 18px;box-shadow:none}
+.login-redesign .primary-button:hover:not(:disabled){transform:none;background:#06145c}
+.login-redesign .switch-prompt{font-size:14px;line-height:1.6;color:#536078;margin-top:22px}
+.login-redesign .form-notice{font-size:14px;line-height:1.7}
+.login-redesign .auth-error-reference{font-size:13px}
+.login-redesign .page-footer{font-size:13px;gap:16px;max-width:460px;width:100%;margin:auto;color:#536078;flex-wrap:wrap}
+.login-redesign .account-store-link{display:inline-flex;align-items:center;min-height:44px;font-size:14px}
+.login-redesign .account-signout{font-size:15px;min-height:48px;border-radius:9px}
+.login-redesign .account-session-note{font-size:14px;line-height:1.7}
+.login-redesign .account-details{border-radius:9px}
+.login-redesign .account-details>span{font-size:14px}
+.login-redesign .account-details>p{font-size:16px}
+@media(min-width:1600px){.login-founder-panel{padding-inline:max(64px,calc((100vw - 1320px)/2))}.login-redesign .form-side{padding-right:max(64px,calc((100vw - 1320px)/2))}}
+@media(max-width:1050px) and (min-width:801px){.login-founder-panel{padding-inline:28px}.login-redesign .form-side{padding-inline:24px}.login-redesign .auth-content{padding:28px}.login-founder-story h1{font-size:34px}.login-founder-story>p:last-child{font-size:15px}}
+@media(max-width:800px){
+  .login-redesign.auth-page{display:block;background:#f5f7fc}
+  .login-founder-panel{display:none}
+  .login-redesign .form-side{padding:0 0 max(16px,env(safe-area-inset-bottom));min-height:100svh}
+  .login-redesign .form-header{justify-content:space-between;gap:16px;background:#091a73;padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) 20px max(20px,env(safe-area-inset-left));min-height:88px}
+  .login-mobile-brand{display:inline-flex;align-items:center;min-height:44px;text-decoration:none}
+  .login-mobile-brand .logo-wordmark{font-size:15px;letter-spacing:.6px}
+  .login-mobile-brand .brand-logo{gap:8px}
+  .login-mobile-label{display:inline}.login-desktop-label{display:none}
+  .login-home-link{color:white;font-size:14px;gap:6px}
+  .login-redesign .form-header :focus-visible{outline-color:#d4a73b}
+  .login-redesign .form-stage{padding:26px 20px;align-items:flex-start;flex:1 0 auto}
+  .login-redesign .auth-content{padding:28px 24px;border-radius:16px;box-shadow:0 8px 28px #091a7306}
+  .login-redesign .auth-heading h2{font-size:36px}
+  .login-redesign .auth-heading p{font-size:16px}
+  .login-redesign .auth-tabs{margin-block:24px}
+  .login-redesign .page-footer{padding:0 22px;max-width:500px;font-size:12px}
+}
+@media(max-width:360px){.login-redesign .form-stage{padding:22px 14px}.login-redesign .auth-content{padding:26px 19px}.login-redesign .auth-heading h2{font-size:33px}.login-redesign .form-header{padding-inline:18px}.login-redesign .form-options{column-gap:6px}.login-redesign .remember,.login-redesign .text-button{font-size:13px}}

@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 async function completeSignup(page: import("@playwright/test").Page) {
-  await page.goto("/");
+  await page.goto("/login/");
   await page.getByRole("tab", { name: "Sign up", exact: true }).click();
   await page.getByLabel("Full name").fill("Ama Mensah");
   await page.getByRole("textbox", { name: "Email address", exact: true }).fill("signup-test@example.com");
@@ -28,7 +28,7 @@ test("successful signup with confirmation required gives clear next steps", asyn
   await expect(page.locator(".form-notice")).toContainText("open the link in this browser");
   await expect(page.getByRole("heading", { name: "Your royal space." })).toHaveCount(0);
   await expect(page.getByLabel("Password", { exact: true })).toHaveValue("");
-  expect(new URL(page.url()).pathname).toBe("/");
+  expect(new URL(page.url()).pathname).toBe("/login/");
   expect(requests).toBe(1);
 });
 
@@ -57,7 +57,7 @@ test("signup displays the email-delivery restriction and safe support reference"
   await expect(page.locator(".form-notice")).toContainText("Confirmation emails are not enabled for new customer addresses");
   await expect(page.locator(".auth-error-reference")).toHaveText("Support reference: email_address_not_authorized");
   await expect(page.getByRole("button", { name: "Create account", exact: true })).toBeEnabled();
-  expect(new URL(page.url()).pathname).toBe("/");
+  expect(new URL(page.url()).pathname).toBe("/login/");
 });
 
 test("signup rate limits are clear and never trigger automatic retries", async ({ page }) => {

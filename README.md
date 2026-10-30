@@ -2,7 +2,11 @@
 
 A responsive storefront and single-page Login/Sign Up experience built with Next.js App Router, TypeScript, and Tailwind CSS 4. The primary palette is Royal Blue `#091A73`, Deep Blue `#06145C`, White `#FFFFFF`, and subtle Gold `#D4A73B` accents.
 
-The customer storefront is at `/shop/`. Login and signup stay at `/` so existing Supabase confirmation and password-recovery callbacks keep working. For guests, the store's account link opens the login page; a successful Supabase sign-in redirects to `/shop/` only after a session is returned. Returning signed-in shoppers see their account name/email, a continue-shopping link, and a sign-out button at `/`. Sign-out uses Supabase's local scope to end this browser's session, removes the remember-me preference, and retains the shopping bag. Failed sign-ins remain on the login page. Signup keeps its email-confirmation step, and recovery links continue to open the new-password form before returning to the account screen. A "Visit the store" link also allows guest browsing.
+The main home page at `/` shows the three-photo introduction. The existing `/welcome/` address remains available. Get Started opens `/shop/` for guests, and Sign In opens the existing login/signup screen, now at `/login/`. The shop footer includes a Home link.
+
+Existing Supabase confirmation and password-recovery URLs that return to `/` are forwarded to `/login/` with their query and fragment intact. The catalogue provider waits until that redirect finishes before initialising Supabase, so the login screen can exchange the code and receive password-recovery events. Ordinary home-page links stay on the landing page. The provider's existing email-return settings are unchanged.
+
+For guests, the store's account link opens `/login/`; successful Supabase sign-in redirects to `/shop/` only after a session is returned. Returning signed-in shoppers see their account name/email, a continue-shopping link, and a sign-out button at `/login/`. Sign-out uses Supabase's local scope to end this browser's session, removes the remember-me preference, and retains the shopping bag. Failed sign-ins remain on the login page. Signup keeps its email-confirmation step, and recovery links open the new-password form before returning to the account screen. A "Visit the store" link also allows guest browsing.
 
 ## Run
 

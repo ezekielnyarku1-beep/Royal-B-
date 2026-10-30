@@ -6,8 +6,9 @@ test("introduction shows the approved photos in order and links to the existing 
   test.setTimeout(60000);
   await page.route("https://gangouwtzbymjlmlumiu.supabase.co/**", route => route.fulfill({ status: 404, contentType: "application/json", body: JSON.stringify({ code: "PGRST205" }) }));
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/welcome/");
+  await page.goto("/");
   await expect(page.getByRole("heading", { name: "Welcome to Big B Royale." })).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Email address", exact: true })).toHaveCount(0);
   const photos = page.locator(".intro-portrait img");
   await expect(photos).toHaveCount(3);
   for (let index = 0; index < 3; index++) {
@@ -26,7 +27,7 @@ test("introduction shows the approved photos in order and links to the existing 
   const start = page.getByRole("link", { name: "Get Started", exact: true });
   await start.scrollIntoViewIfNeeded();
   await expect(start).toHaveAttribute("href", "/shop/");
-  await expect(page.getByRole("link", { name: "Sign In", exact: true })).toHaveAttribute("href", "/");
+  await expect(page.getByRole("link", { name: "Sign In", exact: true })).toHaveAttribute("href", "/login/");
   expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)).toBe("auto");
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await mkdir(".sites-runtime/screenshots", { recursive: true });
@@ -34,7 +35,7 @@ test("introduction shows the approved photos in order and links to the existing 
   await page.screenshot({ path: `.sites-runtime/screenshots/welcome-${isMobile ? "mobile" : "desktop"}.png`, fullPage: true });
   await start.click();
   await expect(page.getByRole("textbox", { name: "Search products", exact: true })).toBeVisible();
-  await page.goto("/welcome/");
+  await page.goto("/");
   await page.getByRole("link", { name: "Sign In", exact: true }).click();
   await expect(page.getByRole("textbox", { name: "Email address", exact: true })).toBeVisible();
 });
@@ -43,7 +44,7 @@ test("landing page fits phone, tablet and desktop widths with readable touch con
   test.setTimeout(60000);
   test.skip(!isMobile, "Viewport checks run once across phone, tablet and desktop sizes.");
   await page.route("https://gangouwtzbymjlmlumiu.supabase.co/**", route => route.fulfill({ status: 404, contentType: "application/json", body: "{}" }));
-  await page.goto("/welcome/");
+  await page.goto("/");
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

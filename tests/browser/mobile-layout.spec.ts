@@ -1,6 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { products } from "../../src/lib/catalogue";
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/rest/v1/store_products*', route => route.fulfill({ status: 404, json: {} }));
+});
+
 test("mobile and tablet layouts fit login, signup, product options and bag", async ({ page, isMobile }) => {
   test.skip(!isMobile, "This check exercises mobile and tablet viewports.");
   test.setTimeout(90000);
@@ -9,7 +13,7 @@ test("mobile and tablet layouts fit login, signup, product options and bag", asy
 
   for (const width of [320, 375, 390, 430, 768]) {
     await page.setViewportSize({ width, height: 844 });
-    await page.goto("/");
+    await page.goto("/login/");
     await expect(page.getByRole("button", { name: "Log in", exact: true })).toBeVisible();
     expect(await fitsPage(), `Login fits ${width}px`).toBe(true);
     await page.getByRole("tab", { name: "Sign up" }).click();

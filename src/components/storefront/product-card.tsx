@@ -10,7 +10,7 @@ export function ProductImage({ product, src = product.image }: { product: Produc
 export function ProductCard({ product, onSelect, saved = false, saving = false, onSave }: { product: Product; onSelect: (product: Product) => void; saved?: boolean; saving?: boolean; onSave?: () => void }) {
   return <article className="product-card">
     <div className="product-media"><button className="product-image-button" type="button" onClick={() => onSelect(product)} aria-label={`View ${product.name}`}>
-      <span className="sample-badge">{product.isSample ? "Sample product" : product.category}</span>
+      {product.isSample && <span className="sample-badge">Sample product</span>}
       <ProductImage product={product}/>
       {product.imageIsPlaceholder && <span className="placeholder-label">Illustrative placeholder</span>}
       {product.imageIsReference && <span className="placeholder-label">Pendant style reference</span>}

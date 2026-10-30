@@ -59,9 +59,19 @@ export async function setFavorite(userId: string, productId: string, saved: bool
 
 const orderFields = "id,reference,user_id,status,items,contact,subtotal,unpriced_quantity,has_estimate,created_at,updated_at";
 export async function fetchOrders(userId?: string): Promise<StoreOrder[]> {
-  let query = createClient().from("store_orders").select(orderFields).order("created_at", { ascending: false }).limit(100);
-  if (userId) query = query.eq("user_id", userId);
-  const { data, error } = await query; check(error); return data as StoreOrder[] ?? [];
+  const orders: StoreOrder[] = [];
+  const pageSize = 100;
+  for (let offset = 0; ; offset += pageSize) {
+    let query = createClient().from("store_orders").select(orderFields)
+      .order("created_at", { ascending: false }).order("id", { ascending: false })
+      .range(offset, offset + pageSize - 1);
+    if (userId) query = query.eq("user_id", userId);
+    const { data, error } = await query;
+    check(error);
+    const page = (data ?? []) as StoreOrder[];
+    orders.push(...page);
+    if (page.length < pageSize) return orders;
+  }
 }
 
 export async function fetchOrderEvents(orderId: string): Promise<OrderEvent[]> {

@@ -16,7 +16,7 @@ export function WorkspaceShell({ title, subtitle, tab, onTab, owner = false, sig
   const tabs = owner ? [{ id: "products", label: "Products", Icon: LayoutGrid }, { id: "orders", label: "Orders", Icon: Package }] : [{ id: "orders", label: "Orders", Icon: Package }, { id: "saved", label: "Saved", Icon: Heart }, { id: "details", label: "My details", Icon: UserRound }];
   async function signOut() {
     setPending(true); setError("");
-    try { await authAdapter.signOut(); router.replace("/"); }
+    try { await authAdapter.signOut(); router.replace("/login/"); }
     catch { setError("We couldn’t sign you out. Please try again."); }
     finally { setPending(false); }
   }

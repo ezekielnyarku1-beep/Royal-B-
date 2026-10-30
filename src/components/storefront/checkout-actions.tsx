@@ -37,6 +37,6 @@ export function CheckoutActions({ items, message }: { items: CartItem[]; message
     {order && order.user_id === user?.id && <div className="saved-order-note" role="status"><Check size={18}/><div><strong>{order.reference}</strong><p>Request saved. Send it on WhatsApp for confirmation.</p><Link href="/account/?tab=orders">View your orders</Link></div></div>}
     {error && <p className="shop-inline-error" role="alert">{error}</p>}
     <a className="shop-button" href={createWhatsAppUrl(store.whatsappNumber, order ? orderWhatsAppMessage(order) : message)} target="_blank" rel="noopener noreferrer"><MessageCircle size={19}/>Continue on WhatsApp<ArrowRight size={17}/></a>
-    {!user && <Link className="checkout-account-link" href="/">Sign in to save and track requests</Link>}
+    {!user && <Link className="checkout-account-link" href="/login/">Sign in to save and track requests</Link>}
   </div>;
 }
