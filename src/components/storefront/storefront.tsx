@@ -3,7 +3,9 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, ChevronDown, Circle, Crown, Gem, Gift, Heart, Info, Menu, MessageCircle, Milk, Package, PenLine, PlugZap, Search, ShoppingBag, Sparkles, Truck, Watch, X, type LucideIcon } from "lucide-react";
 import { Logo, ShoppingBags } from "@/components/brand";
-import { categories, products, store, type Product } from "@/lib/catalogue";
+import { availabilityLabel, store, type Product } from "@/lib/catalogue";
+import { useCatalogue } from "@/components/commerce-provider";
+import { useSavedProducts } from "@/hooks/use-saved-products";
 import { addToCart, CART_STORAGE_KEY, cartLineKey, changeCartOption, MAX_CUSTOMIZATION_LENGTH, MAX_QUANTITY, parseCart, type CartItem } from "@/lib/cart";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
 import { ProductCard } from "./product-card";
@@ -18,6 +20,9 @@ const personalised = new Set(["Bracelets", "Necklaces", "Rings", "Bottles", "Dia
 const homeCategories = new Set(["Bedsheets", "Home & Living", "Curtains"]);
 
 export function Storefront() {
+  const { products, loading } = useCatalogue();
+  const categories = [...new Set(products.map(product => product.category))];
+  const saved = useSavedProducts();
   const [filter, setFilter] = useState("All products");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("featured");
@@ -34,7 +39,7 @@ export function Storefront() {
     try { setCart(parseCart(localStorage.getItem(CART_STORAGE_KEY), products)); }
     catch { setNotice("Your bag works for this visit. Browser storage is unavailable."); }
     setCartReady(true);
-  }, []);
+  }, [products]);
 
   useEffect(() => {
     if (!cartReady) return;
@@ -48,9 +53,20 @@ export function Storefront() {
     }
     window.addEventListener("storage", syncBag);
     return () => window.removeEventListener("storage", syncBag);
-  }, []);
+  }, [products]);
 
   useEffect(() => { if (selected && !productDialog.current?.open) productDialog.current?.showModal(); }, [selected]);
+  useEffect(() => {
+    if (loading) return;
+    const query = new URLSearchParams(window.location.search);
+    const id = query.get("product");
+    if (!id) return;
+    const product = products.find(product => product.id === id);
+    if (product) setSelected(product);
+    else setNotice("This product is no longer listed.");
+    query.delete("product");
+    window.history.replaceState(null, "", `/shop/${query.size ? `?${query}` : ""}`);
+  }, [loading, products]);
   useEffect(() => { if (cartOpen && !cartDialog.current?.open) cartDialog.current?.showModal(); }, [cartOpen]);
   useEffect(() => {
     if (!selected && !cartOpen) return;
@@ -81,6 +97,12 @@ export function Storefront() {
     return null;
   }
   function addItem(item: CartItem) {
+    if (!cartReady) return "Your bag is still loading. Please try again in a moment.";
+    const product = products.find(product => product.id === item.productId);
+    if (!product || availabilityLabel(product) === "Unavailable") return "This product is currently unavailable.";
+    if (product.priceOptions && !product.priceOptions.some(option => option.id === item.optionId)) return "Please choose a current customisation option.";
+    const requested = cart.filter(line => line.productId === item.productId).reduce((total, line) => total + line.quantity, 0) + item.quantity;
+    if (product.stockQuantity != null && requested > product.stockQuantity) return `The listed quantity available is ${product.stockQuantity}. Please reduce the quantity in your bag.`;
     const normalized = { ...item, customization: item.customization.trim().slice(0, MAX_CUSTOMIZATION_LENGTH) };
     const existing = cart.find(line => cartLineKey(line) === cartLineKey(normalized));
     if (existing && existing.quantity + item.quantity > MAX_QUANTITY) {
@@ -99,12 +121,12 @@ export function Storefront() {
 
   return <div className="storefront">
     <a className="shop-skip-link" href="#collection">Skip to products</a>
-    <div className="store-announcement"><Sparkles size={13}/><span>A little everyday luxury. A personal touch.</span><Sparkles size={13}/></div>
+    <div className="store-announcement"><Sparkles size={13}/><span>Shop online. Confirm your order on WhatsApp.</span><Sparkles size={13}/></div>
     <header className="store-header">
       <div className="store-container store-header-main">
         <Link className="store-logo-link" href="/shop/" aria-label="Big B Royale shop home"><Logo light/></Link>
         <form className="store-search" role="search" onSubmit={event => { event.preventDefault(); event.currentTarget.querySelector("input")?.blur(); document.getElementById("collection")?.scrollIntoView({ behavior: "auto" }); }}>
-          <Search size={19} aria-hidden="true"/><input aria-label="Search products" inputMode="search" enterKeyHint="search" placeholder="Find your next favourite…" value={search} onChange={event => { setSearch(event.target.value); setFilter("All products"); }}/>
+          <Search size={19} aria-hidden="true"/><input aria-label="Search products" inputMode="search" enterKeyHint="search" placeholder="Search products" value={search} onChange={event => { setSearch(event.target.value); setFilter("All products"); }}/>
           {search ? <button type="button" aria-label="Clear search" onClick={() => setSearch("")}><X size={17}/></button> : <button type="submit" aria-label="Search the collection"><ArrowRight size={18}/></button>}
         </form>
         <div className="store-header-actions"><AccountLink/><button type="button" className="header-bag" aria-label={`Open shopping bag, ${count} ${count === 1 ? "item" : "items"}`} onClick={() => setCartOpen(true)}><ShoppingBag size={22}/><span className="bag-label">Your bag</span><span className="bag-count">{count}</span></button><button className="mobile-menu-button" type="button" aria-label={mobileMenu ? "Close navigation" : "Open navigation"} aria-expanded={mobileMenu} aria-controls="store-navigation" onClick={() => setMobileMenu(!mobileMenu)}>{mobileMenu ? <X size={23}/> : <Menu size={23}/>}</button></div>
@@ -113,25 +135,25 @@ export function Storefront() {
     </header>
     <main>
       <section className="store-hero" aria-labelledby="store-hero-title"><div className="store-container hero-grid">
-        <div className="hero-copy"><span className="hero-eyebrow"><span/>THOUGHTFUL FINDS. PERSONAL TOUCHES.</span><h1 id="store-hero-title">Your everyday,<br/><em>made personal.</em></h1><p>For your moments. For your people. For you.<br/>Discover the little things that mean a little more.</p><div className="hero-actions"><a href="#collection" className="shop-button shop-button-white" onClick={() => selectCategory("All products")}>Explore the collection<ArrowRight size={18}/></a><a className="hero-how-link" href="#how-to-order">How to order<ArrowUpRight size={16}/></a></div><span className="hero-footnote"><MessageCircle size={15}/>Choose it. Personalise it. Let’s talk on WhatsApp.</span></div>
+        <div className="hero-copy"><span className="hero-eyebrow"><span/>THOUGHTFUL FINDS. PERSONAL TOUCHES.</span><h1 id="store-hero-title">Shop Big B Royale</h1><p>Personalised gifts, watches and home essentials.</p><div className="hero-actions"><a href="#collection" className="shop-button shop-button-white" onClick={() => selectCategory("All products")}>Browse products<ArrowRight size={18}/></a><a className="hero-how-link" href="#how-to-order">How to order<ArrowUpRight size={16}/></a></div><span className="hero-footnote"><MessageCircle size={15}/>Choose it. Personalise it. Let’s talk on WhatsApp.</span></div>
         <div className="hero-art" aria-hidden="true"><span className="hero-art-caption">A LITTLE EVERYDAY LUXURY</span><ShoppingBags/><div className="hero-gift-note"><span><Gift size={22} strokeWidth={1.4}/></span><div>It’s the thought that counts.<small>Make the little things yours.</small></div><Sparkles size={17}/></div></div>
       </div><div className="hero-bottom-line store-container"><span>PERSONALISE YOUR EVERYDAY</span><span>EXPLORE A LITTLE MORE <ArrowDown size={12}/></span></div></section>
       <section className="store-benefits" aria-label="A thoughtful way to shop"><div className="store-container benefits-grid"><div><Gift size={25} strokeWidth={1.4}/><p>Personal touches<small>Share your own names, ideas & preferences</small></p></div><div><MessageCircle size={25} strokeWidth={1.4}/><p>A real conversation<small>Confirm the details directly on WhatsApp</small></p></div><div><Truck size={26} strokeWidth={1.4}/><p>Delivery, your way<small>Get delivery charges for your location</small></p></div></div></section>
-      <section className="category-section store-container" aria-labelledby="categories-heading"><div className="section-kicker"><span/>A LITTLE SOMETHING FOR EVERYONE</div><div className="section-heading"><h2 id="categories-heading">Find your kind of lovely.</h2><a href="#collection" className="shop-text-link" onClick={() => selectCategory("All products")}>Explore all categories<ArrowUpRight size={16}/></a></div><div className="category-grid">{categories.map(category => { const Icon = categoryIcons[category] || Gift; return <a href="#collection" key={category} onClick={() => selectCategory(category)} className={filter === category ? "category-selected" : ""}><span className="category-icon"><Icon size={27} strokeWidth={1.3}/></span><span>{category}</span><ArrowUpRight className="category-arrow" size={13}/></a>; })}</div></section>
-      <section className="collection-section" id="collection" aria-labelledby="collection-heading"><div className="store-container"><div className="section-kicker"><span/>THE BIG B ROYALE COLLECTION</div><div className="section-heading collection-heading"><div><h2 id="collection-heading">Little finds. Big meaning.</h2><p>Explore gifting ideas and everyday favourites, with your own personal touch.</p></div><label className="sort-label" htmlFor="product-sort">Sort by<select id="product-sort" value={sort} onChange={event => setSort(event.target.value)}><option value="featured">Featured</option><option value="name">Name: A–Z</option></select></label></div>
+      <section className="category-section store-container" aria-labelledby="categories-heading"><div className="section-kicker"><span/>A LITTLE SOMETHING FOR EVERYONE</div><div className="section-heading"><h2 id="categories-heading">Shop by category</h2><a href="#collection" className="shop-text-link" onClick={() => selectCategory("All products")}>Explore all categories<ArrowUpRight size={16}/></a></div><div className="category-grid">{categories.map(category => { const Icon = categoryIcons[category] || Gift; return <a href="#collection" key={category} onClick={() => selectCategory(category)} className={filter === category ? "category-selected" : ""}><span className="category-icon"><Icon size={27} strokeWidth={1.3}/></span><span>{category}</span><ArrowUpRight className="category-arrow" size={13}/></a>; })}</div></section>
+      <section className="collection-section" id="collection" aria-labelledby="collection-heading"><div className="store-container"><div className="section-kicker"><span/>THE BIG B ROYALE COLLECTION</div><div className="section-heading collection-heading"><div><h2 id="collection-heading">Browse products</h2><p>Choose a product to see its options.</p></div><label className="sort-label" htmlFor="product-sort">Sort by<select id="product-sort" value={sort} onChange={event => setSort(event.target.value)}><option value="featured">Featured</option><option value="name">Name: A–Z</option></select></label></div>
         <div className="collection-filters" role="group" aria-label="Filter products by category">{["All products", ...categories].map(category => <button type="button" key={category} aria-pressed={filter === category} onClick={() => setFilter(category)}>{category}</button>)}</div>
-        {(sampleListings || placeholderImages) && <div className="catalogue-notice"><Info size={17}/><p><strong>A first look at our collection.</strong> {sampleListings ? "Sample listings are marked." : ""} {placeholderImages ? "Images marked as illustrative placeholders are not actual product photos." : ""} Prices, styles and availability are confirmed with the seller on WhatsApp.</p></div>}
+        {(sampleListings || placeholderImages) && <div className="catalogue-notice"><Info size={17}/><p><strong>Product information</strong> {sampleListings ? "Sample listings are marked." : ""} {placeholderImages ? "Images marked as illustrative placeholders are not actual product photos." : ""} Prices, styles and availability are confirmed with the seller on WhatsApp.</p></div>}
         <div className="collection-count" role="status" aria-live="polite">{visible.length} {visible.length > 0 && visible.every(product => product.isSample) ? "sample " : ""}{visible.length === 1 ? "product" : "products"}{search && ` matching “${search}”`}{filter !== "All products" && ` · ${filter}`}</div>
-        {visible.length ? <div className="product-grid">{visible.map(product => <ProductCard key={product.id} product={product} onSelect={setSelected}/>)}</div> : <div className="empty-search"><Search size={31} strokeWidth={1.4}/><h3>No finds just yet.</h3><p>Try a different search or explore the full collection.</p><button className="shop-button" type="button" onClick={() => { setSearch(""); setFilter("All products"); }}>Show all products<ArrowRight size={17}/></button></div>}
+        {visible.length ? <div className="product-grid">{visible.map(product => <ProductCard key={product.id} product={product} onSelect={setSelected} saved={saved.ids.includes(product.id)} saving={saved.pending.includes(product.id)} onSave={() => void saved.toggle(product.id)}/>)}</div> : <div className="empty-search"><Search size={31} strokeWidth={1.4}/><h3>No products found.</h3><p>Try another search or category.</p><button className="shop-button" type="button" onClick={() => { setSearch(""); setFilter("All products"); }}>Show all products<ArrowRight size={17}/></button></div>}
       </div></section>
-      <section className="order-section" id="how-to-order" aria-labelledby="order-heading"><div className="store-container order-grid"><div><div className="hero-eyebrow"><span/>A PERSONAL WAY TO SHOP</div><h2 id="order-heading">A few little steps.<br/><em>Something truly yours.</em></h2><p>No online payment. No complicated checkout.<br/>Just you, your ideas, and a conversation.</p><a href={contactUrl} target="_blank" rel="noopener noreferrer" className="shop-text-link">Talk to us on WhatsApp<ArrowUpRight size={16}/></a></div><ol className="order-steps"><li><span>01</span><div><h3>Find your favourites</h3><p>Browse the collection and choose what catches your eye.</p></div><ShoppingBag size={22} strokeWidth={1.3}/></li><li><span>02</span><div><h3>Make it personal</h3><p>Choose quantities and tell us about names, styles or special requests.</p></div><PenLine size={22} strokeWidth={1.3}/></li><li><span>03</span><div><h3>Let’s make it happen</h3><p>Send your bag on WhatsApp. We’ll confirm pricing, availability, customisation and delivery charges.</p></div><MessageCircle size={22} strokeWidth={1.3}/></li></ol></div></section>
+      <section className="order-section" id="how-to-order" aria-labelledby="order-heading"><div className="store-container order-grid"><div><div className="hero-eyebrow"><span/>A PERSONAL WAY TO SHOP</div><h2 id="order-heading">How to order</h2><p>Choose your items and send your request on WhatsApp.</p><a href={contactUrl} target="_blank" rel="noopener noreferrer" className="shop-text-link">Talk to us on WhatsApp<ArrowUpRight size={16}/></a></div><ol className="order-steps"><li><span>01</span><div><h3>Choose your products</h3><p>Browse products and choose quantities.</p></div><ShoppingBag size={22} strokeWidth={1.3}/></li><li><span>02</span><div><h3>Add your details</h3><p>Choose quantities and tell us about names, styles or special requests.</p></div><PenLine size={22} strokeWidth={1.3}/></li><li><span>03</span><div><h3>Send your request</h3><p>Send your bag on WhatsApp. We’ll confirm pricing, availability, customisation and delivery charges.</p></div><MessageCircle size={22} strokeWidth={1.3}/></li></ol></div></section>
       <section className="store-note store-container" aria-labelledby="story-heading"><span><Crown size={25} strokeWidth={1.2}/></span><h2 id="story-heading">Thoughtfully chosen. Personally yours.</h2><p>From a name on a necklace to a note in a diary, the small details make it personal.<br/>Welcome to Big B Royale. A little everyday luxury, with a touch of you.</p><span className="note-signature">Big B Royale</span></section>
     </main>
-    <footer className="store-footer"><div className="store-container"><div className="footer-grid"><div className="footer-brand"><Logo light/><p>Everyday finds. Thoughtful gifts.<br/>A little royal treatment, just for you.</p><span className="footer-ghana"><span className="ghana-flag" aria-hidden="true"><span>★</span></span>Proudly Ghanaian</span></div><div><h2>Explore</h2><a href="#collection" onClick={() => selectCategory("All products")}>Shop the collection</a><a href="#collection" onClick={() => selectCategory("Personalised gifts")}>Personalised gifts</a><a href="#how-to-order">How to order</a><Link href="/">Your account</Link></div><div><h2>Let’s talk</h2><a href={contactUrl} target="_blank" rel="noopener noreferrer">WhatsApp us<ArrowUpRight size={13}/></a><a href={contactUrl} target="_blank" rel="noopener noreferrer">{store.whatsappDisplay}</a><p>Questions, personalisation or delivery?<br/>A conversation is a lovely place to start.</p></div><div className="footer-delivery"><Truck size={24} strokeWidth={1.3}/><h2>A note on delivery</h2><p>{store.delivery}</p><span>All quotes are in Ghana Cedis (GHS).</span></div></div><div className="footer-bottom"><span>© 2026 Big B Royale. All rights reserved.</span><span>Royal in the details.</span><a href="#store-hero-title">Back to top ↑</a></div></div></footer>
+    <footer className="store-footer"><div className="store-container"><div className="footer-grid"><div className="footer-brand"><Logo light/><p>Personalised gifts and everyday essentials.</p><span className="footer-ghana"><span className="ghana-flag" aria-hidden="true"><span>★</span></span>Proudly Ghanaian</span></div><div><h2>Explore</h2><a href="#collection" onClick={() => selectCategory("All products")}>Shop the collection</a><a href="#collection" onClick={() => selectCategory("Personalised gifts")}>Personalised gifts</a><a href="#how-to-order">How to order</a><Link href="/account/">Your account</Link><Link href="/account/?tab=orders">Track orders</Link></div><div><h2>Let’s talk</h2><a href={contactUrl} target="_blank" rel="noopener noreferrer">WhatsApp us<ArrowUpRight size={13}/></a><a href={contactUrl} target="_blank" rel="noopener noreferrer">{store.whatsappDisplay}</a><p>Questions about a product or your order? Send us a message.</p></div><div className="footer-delivery"><Truck size={24} strokeWidth={1.3}/><h2>A note on delivery</h2><p>{store.delivery}</p><span>All quotes are in Ghana Cedis (GHS).</span></div></div><div className="footer-bottom"><span>© 2026 Big B Royale. All rights reserved.</span><span></span><a href="#store-hero-title">Back to top ↑</a></div></div></footer>
     <MobileNavigation count={count} contactUrl={contactUrl} onShop={() => { setSearch(""); selectCategory("All products"); }} onBag={() => setCartOpen(true)}/>
-    <a className="floating-whatsapp" href={contactUrl} target="_blank" rel="noopener noreferrer" aria-label="Chat with Big B Royale on WhatsApp"><MessageCircle size={21}/><span>Let’s chat</span><ArrowUpRight size={14}/></a>
-    <div className="shop-toast-region" role="status" aria-live="polite" aria-atomic="true">{notice && <div className="shop-toast"><Check size={18}/><span>{notice}</span><button type="button" aria-label="Dismiss notification" onClick={() => setNotice("")}><X size={16}/></button></div>}</div>
+    <a className="floating-whatsapp" href={contactUrl} target="_blank" rel="noopener noreferrer" aria-label="Chat with Big B Royale on WhatsApp"><MessageCircle size={21}/><span>WhatsApp</span><ArrowUpRight size={14}/></a>
+    <div className="shop-toast-region" role="status" aria-live="polite" aria-atomic="true">{(notice || saved.error) && <div className="shop-toast"><Check size={18}/><span>{saved.error || notice}{saved.error && !saved.user && <> <Link href="/">Sign in</Link></>}</span><button type="button" aria-label="Dismiss notification" onClick={() => { setNotice(""); saved.clearError(); }}><X size={16}/></button></div>}</div>
     <dialog className="shop-dialog product-dialog" ref={productDialog} aria-labelledby="product-dialog-title" onClose={() => setSelected(null)}>{selected && <ProductDialogContent key={selected.id} product={selected} onClose={() => productDialog.current?.close()} onAdd={addItem}/>}</dialog>
-    <dialog className="shop-dialog cart-dialog" ref={cartDialog} aria-labelledby="cart-dialog-title" onClose={() => setCartOpen(false)}><CartDrawer items={cart} onClose={() => cartDialog.current?.close()} onUpdate={(key, quantity) => setCart(items => items.map(item => cartLineKey(item) === key ? { ...item, quantity } : item))} onOptionChange={updateOption} onRemove={key => setCart(items => items.filter(item => cartLineKey(item) !== key))}/></dialog>
+    <dialog className="shop-dialog cart-dialog" ref={cartDialog} aria-labelledby="cart-dialog-title" onClose={() => setCartOpen(false)}><CartDrawer items={cart} products={products} onClose={() => cartDialog.current?.close()} onUpdate={(key, quantity) => setCart(items => items.map(item => cartLineKey(item) === key ? { ...item, quantity } : item))} onOptionChange={updateOption} onRemove={key => setCart(items => items.filter(item => cartLineKey(item) !== key))}/></dialog>
   </div>;
 }

@@ -1,0 +1,11 @@
+-- After both migrations, run this in the Supabase SQL editor as project owner.
+-- The email must already be registered and confirmed. Never grant owners from
+-- browser metadata, a client-side email comparison, or a public API key.
+do $$
+declare owner_id uuid;
+begin
+  select id into owner_id from auth.users
+  where lower(email) = lower('replace-with-registered-owner-email') and email_confirmed_at is not null;
+  if owner_id is null then raise exception 'Register and confirm the owner email first.'; end if;
+  insert into private.store_admins(user_id) values(owner_id) on conflict do nothing;
+end $$;

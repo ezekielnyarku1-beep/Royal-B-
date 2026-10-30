@@ -1,9 +1,9 @@
 import { ArrowUpRight, Crown, PackageCheck, Sparkles } from "lucide-react";
 
 export function Logo({ light = false }: { light?: boolean }) {
-  return <div className={`brand-logo ${light ? "brand-logo-light" : ""}`} aria-label="Big B Royale">
+  return <div className={`brand-logo ${light ? "brand-logo-light" : ""}`} role="img" aria-label="Big B Royale">
     <span className="logo-mark" aria-hidden="true"><Crown size={19} strokeWidth={1.5} /><span>B</span></span>
-    <span className="logo-wordmark">BIG B <span>ROYALE</span><small>A LITTLE EVERYDAY LUXURY</small></span>
+    <span className="logo-wordmark">BIG B <span>ROYALE</span></span>
   </div>;
 }
 
@@ -49,11 +49,11 @@ export function BrandPanel() {
   return <aside className="brand-panel" aria-label="Welcome to Big B Royale">
     <Logo light />
     <div className="brand-story">
-      <div className="eyebrow"><span /> THE GOOD LIFE STARTS HERE</div>
-      <h1>Your everyday,<br /><em>elevated.</em></h1>
-      <p>Great finds. Thoughtful prices.<br />A little royal treatment, just for you.</p>
+
+      <h1>Big B Royale</h1>
+      <p>Personalised gifts, watches<br />and home essentials.</p>
     </div>
-    <div className="art-wrap"><ShoppingBags /><div className="art-note"><span className="note-icon"><Sparkles size={18}/></span><div>Anything but ordinary.<small>Find your next favourite.</small></div><ArrowUpRight size={18} className="note-arrow"/></div></div>
-    <div className="brand-bottom"><div><PackageCheck size={19} strokeWidth={1.5}/><span>Thoughtfully selected. Royally yours.</span></div><span className="brand-bottom-line" /></div>
+    <div className="art-wrap"><ShoppingBags /><div className="art-note"><span className="note-icon"><Sparkles size={18}/></span><div>Made for you.<small>Shop Big B Royale.</small></div><ArrowUpRight size={18} className="note-arrow"/></div></div>
+    <div className="brand-bottom"><div><PackageCheck size={19} strokeWidth={1.5}/><span>Browse products and order on WhatsApp.</span></div><span className="brand-bottom-line" /></div>
   </aside>;
 }

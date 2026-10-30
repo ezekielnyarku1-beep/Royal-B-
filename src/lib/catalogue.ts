@@ -17,7 +17,8 @@ export interface Product {
   priceGhs: number | null;
   priceIsEstimate?: boolean;
   priceOptions?: PriceOption[];
-  availability: "confirm";
+  availability: "confirm" | "available" | "unavailable";
+  stockQuantity?: number | null;
   customizationLabel: string;
   customizationHint: string;
 }
@@ -152,4 +153,9 @@ export function priceLabel(product: Product, optionId?: string): string {
   if (product.priceOptions && !optionId) return `From ${formatPrice(Math.min(...product.priceOptions.map(option => option.priceGhs)))}`;
   const price = unitPriceGhs(product, optionId);
   return price === null ? "Contact for Price" : `${product.priceIsEstimate ? "About " : ""}${formatPrice(price)}`;
+}
+
+export function availabilityLabel(product: Product): string {
+  if (product.availability === "unavailable" || product.stockQuantity === 0) return "Unavailable";
+  return product.availability === "available" ? "Available" : "Confirm Availability";
 }

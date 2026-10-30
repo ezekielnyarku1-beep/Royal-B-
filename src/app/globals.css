@@ -141,3 +141,4 @@ button:disabled { cursor: wait; opacity: .65; }
   .dialog-close { width: 44px; height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+.field label,.text-button,.remember,.switch-prompt,.primary-button,.auth-tabs button,.account-signout{font-size:15px}.input-wrap input{font-size:16px}.auth-heading p{font-size:16px}.field-hint,.field-error,.form-notice,.security-note,.account-session-note,.account-details>span,.reset-dialog>p{font-size:14px}.page-footer{font-size:12px}.account-signout{text-decoration:none}.reset-dialog input{font-size:16px}.security-note{line-height:1.5}

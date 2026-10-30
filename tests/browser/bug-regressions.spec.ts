@@ -51,7 +51,7 @@ test("short landscape screens allow item editing, removal and checkout review", 
     await checkout.click({ trial: true });
     expect(new URL((await checkout.getAttribute("href"))!).searchParams.get("text")).toContain("Quantity: 2");
     await bag.getByRole("button", { name: /Remove Customized Bracelets/ }).click();
-    await expect(bag.getByRole("heading", { name: "A little room for something lovely." })).toBeVisible();
+    await expect(bag.getByRole("heading", { name: "Your bag is empty." })).toBeVisible();
     await page.getByRole("button", { name: "Close shopping bag" }).click();
   }
 });

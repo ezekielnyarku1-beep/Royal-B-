@@ -5,7 +5,7 @@ import { products } from "../../src/lib/catalogue";
 test("shows supplied photos/prices and clearly labels the remaining sample products", async ({ page }) => {
   test.setTimeout(60000);
   await page.goto("/shop/");
-  await expect(page.getByRole("heading", { name: /Your everyday/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Shop Big B Royale" })).toBeVisible();
   await expect(page.locator(".product-card")).toHaveCount(products.length);
   for (const [name, price] of [["Customized Bracelets", "GH₵130.00"], ["Personalized Name Necklaces", "GH₵100.00"], ["Photo-Customized Necklace", "GH₵140.00"], ["Customized Rings", "GH₵50.00"], ["Phone Charger", "GH₵150.00"]]) {
     await expect(page.locator(".product-card").filter({ has: page.getByRole("heading", { name, exact: true }) }).locator(".product-price")).toHaveText(price);
@@ -23,7 +23,7 @@ test("shows supplied photos/prices and clearly labels the remaining sample produ
   await expect(page.locator(".product-card")).toHaveCount(1);
   await expect(page.locator(".product-card h3")).toHaveText("Personalized Diaries");
   await page.getByRole("textbox", { name: "Search products" }).fill("no-matching-product");
-  await expect(page.getByRole("heading", { name: "No finds just yet." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "No products found." })).toBeVisible();
   await page.getByRole("button", { name: "Show all products" }).click();
   await page.getByLabel("Sort by").selectOption("name");
   await expect(page.locator(".product-card h3")).toHaveText(products.map(product => product.name).sort((a, b) => a.localeCompare(b)));
@@ -68,7 +68,7 @@ test("customised bag persists and produces the right WhatsApp draft without send
   await bag.getByText("Preview your WhatsApp enquiry").click();
   await expect(bag.locator("pre")).toContainText(message);
   await bag.getByRole("button", { name: /Remove Customized Bracelets/ }).click();
-  await expect(bag.getByRole("heading", { name: "A little room for something lovely." })).toBeVisible();
+  await expect(bag.getByRole("heading", { name: "Your bag is empty." })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: "Open shopping bag, 0 items" })).toBeFocused();
 });

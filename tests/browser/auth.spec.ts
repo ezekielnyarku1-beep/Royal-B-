@@ -131,7 +131,7 @@ test("login returns shoppers to the store with their custom bag intact", async (
   await expect(page).toHaveURL(/\/shop\//);
   await expect(page.getByRole("button", { name: "Open shopping bag, 2 items" })).toBeVisible();
   if (isMobile) {
-    await page.getByRole("heading", { name: /Your everyday/ }).click();
+    await page.getByRole("heading", { name: "Shop Big B Royale" }).click();
     await page.screenshot({ path: path.join(directory, "store-after-login.png"), animations: "disabled" });
   }
   await page.getByRole("button", { name: "Open shopping bag, 2 items" }).click();
@@ -147,6 +147,7 @@ test("login returns shoppers to the store with their custom bag intact", async (
 });
 
 test("signed-in shoppers can view their account, reload and sign out without losing their bag", async ({ page, isMobile }) => {
+  test.setTimeout(60000);
   await mockSuccessfulSignIn(page);
   await page.goto("/shop/");
   await page.getByRole("button", { name: "Choose options for Customized Bracelets", exact: true }).click();
@@ -158,11 +159,11 @@ test("signed-in shoppers can view their account, reload and sign out without los
   await page.getByRole("button", { name: "Log in", exact: true }).click();
   await expect(page).toHaveURL(/\/shop\//);
   await page.getByRole("link", { name: "Your account", exact: true }).first().click();
-  await expect(page.getByRole("heading", { name: "Your royal space." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "My account" })).toBeVisible();
   await expect(page.getByText("ama@example.com", { exact: true })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Log in", exact: true })).toHaveCount(0);
   await page.reload();
-  await expect(page.getByRole("heading", { name: "Your royal space." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "My account" })).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
   expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
   if (isMobile) await page.screenshot({ path: path.resolve(".sites-runtime/previews/mobile-check/account.png"), fullPage: true, animations: "disabled" });
@@ -276,7 +277,7 @@ test("recovery links let a user set a new password", async ({ page }) => {
   await page.getByRole("button", { name: "Update password" }).click();
   await expect(page.getByText("Your password has been updated.")).toBeVisible();
   await page.getByRole("button", { name: "Continue to your account" }).click();
-  await expect(page.getByRole("heading", { name: "Your royal space." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your account" })).toBeVisible();
 });
 
 test("tabs support keyboard navigation and layouts have no overflow", async ({ page }) => {

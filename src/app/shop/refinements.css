@@ -1,0 +1,65 @@
+.hero-eyebrow, .hero-art, .hero-bottom-line, .hero-footnote, .section-kicker, .store-note { display: none; }
+.hero-grid { display: block; min-height: 0; }
+.hero-copy { padding-block: 42px; }
+.hero-copy h1 { font-size: clamp(32px, 4vw, 48px); letter-spacing: -1.5px; margin: 0 0 14px; }
+.hero-copy > p { font-size: 17px; line-height: 1.7; margin: 0 0 24px; }
+.hero-actions { margin-top: 0; gap: 20px; }
+.hero-actions .shop-button, .hero-how-link { font-size: 15px; }
+.store-benefits { display: none; }
+.storefront .category-section { padding-block: 28px; }
+.storefront .store-search input { font-size: 16px; }
+.storefront .store-announcement { font-size: 13px; padding-block: 10px; }
+.storefront .store-announcement svg { display: none; }
+.storefront .store-navigation-links a, .storefront .shop-text-link { font-size: 14px; }
+.storefront .store-location, .storefront .footer-ghana { font-size: 13px; }
+.storefront .section-heading h2 { font-size: 27px; letter-spacing: -.7px; }
+.storefront .category-grid > a, .storefront .collection-filters button { font-size: 13px; }
+.storefront .collection-heading > div > p, .storefront .catalogue-notice, .storefront .collection-count { font-size: 14px; }
+.storefront .product-info h3 { font-size: 16px; }
+.storefront .product-category, .storefront .sample-badge { font-size: 11px; }
+.storefront .product-price { font-size: 17px; }
+.storefront .availability, .storefront .product-add { font-size: 13px; }
+.product-media { position: relative; }
+.product-save-button { position: absolute; top: 7px; right: 7px; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #e1e6ef; border-radius: 50%; background: #fff; color: #091a73; }
+.product-save-button[aria-pressed="true"] { color: #091a73; background: #edf1fc; }
+.product-save-button:hover { background: #f1f4fc; }
+.storefront .order-grid h2 { font-family: "Manrope", sans-serif; font-size: 29px; letter-spacing: -.6px; margin-top: 0; }
+.storefront .order-grid > div > p, .storefront .order-steps p { font-size: 15px; }
+.storefront .order-steps h3 { font-size: 17px; }
+.storefront .footer-grid h2 { font-size: 16px; }
+.storefront .footer-grid p, .storefront .footer-grid > div > a { font-size: 14px; }
+.storefront .footer-bottom { font-size: 12px; }
+.storefront .footer-bottom > span:nth-child(2) { display: none; }
+.storefront .product-description, .storefront .shop-label { font-size: 15px; }
+.storefront .customization-help, .storefront .quantity-limit-note, .storefront .product-disclaimer, .storefront .gallery-caption { font-size: 13px; }
+.storefront .shop-eyebrow { font-size: 12px; letter-spacing: .7px; }
+.storefront .cart-item h3 { font-size: 15px; }
+.storefront .cart-item-availability, .storefront .cart-checkout > small { font-size: 12px; }
+.storefront .cart-checkout > .checkout-actions { display: block; margin: 0; }
+.checkout-actions .shop-button { width: 100%; min-height: 48px; }
+.checkout-actions > p { font-size: 13px; line-height: 1.6; color: #626b7c; margin: 8px 0 16px; }
+.checkout-save-request { width: 100%; min-height: 46px; background: white; color: #091a73; border: 1px solid #091a73; border-radius: 6px; font-size: 14px; font-weight: 600; padding: 10px; }
+.checkout-account-link { display: flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 8px; color: #091a73; font-size: 13px; text-align: center; }
+.saved-order-note { display: flex; gap: 10px; padding: 12px; margin-bottom: 14px; border: 1px solid #d5e0f5; border-radius: 7px; background: #eef3ff; font-size: 14px; }
+.saved-order-note > svg { flex-shrink: 0; }
+.saved-order-note p { margin: 6px 0; line-height: 1.6; }
+.saved-order-note a { display: inline-flex; align-items: center; min-height: 44px; color: #091a73; text-decoration: underline; }
+.shop-toast a { color: #091a73; text-decoration: underline; font-weight: 600; }
+@media (max-width: 760px), (max-width: 950px) and (max-height: 500px) {
+  .hero-copy { padding-block: 25px 28px; }
+  .hero-copy h1 { font-size: 33px; letter-spacing: -1px; }
+  .hero-copy > p { font-size: 16px; margin-bottom: 20px; }
+  .hero-actions { gap: 10px 16px; }
+  .hero-actions .shop-button, .hero-how-link { font-size: 14px; }
+  .storefront .category-grid > a { flex-basis: 94px; }
+  .storefront .product-info { padding: 12px; }
+  .storefront .product-info h3 { font-size: 15px; min-height: 46px; }
+  .storefront .product-add { font-size: 13px; }
+  .storefront .product-price { font-size: 17px; }
+  .storefront .catalogue-notice { font-size: 13px; }
+  .storefront .collection-filters button { font-size: 14px; }
+  .storefront .mobile-nav-item { font-size: 12px; }
+  .storefront .order-grid > div > p, .storefront .order-steps p { font-size: 15px; }
+  .storefront .quantity-limit-note { margin-top: 0; }
+  .storefront .product-purchase-bar { bottom: 16px; }
+}

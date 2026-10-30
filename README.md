@@ -37,7 +37,7 @@ Product details open as a scrollable sheet with a sticky close button and Add to
 
 Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` from your Supabase project's API settings. These are public client settings; never put a secret or service-role key in a `NEXT_PUBLIC_*` variable. The checked-in `.env.local` is ignored by Git.
 
-The login, signup, email-confirmation redirect, and password-reset flows use Supabase Auth through `@supabase/ssr`. Supabase's browser client manages and refreshes the session in cookies. “Remember me” controls whether those cookies persist for 400 days or until the browser session ends. Because this is a static site, these browser-managed cookies are JavaScript-readable, not `HttpOnly`; they are not server-verified sessions. Passwords exist only in transient React form state and are cleared after submission or changing modes; confirm password is checked locally and never sent to Supabase. Account-existence-sensitive responses are kept generic.
+The login, signup, email-confirmation redirect, and password-reset flows use Supabase Auth through `@supabase/ssr`. Supabase's browser client manages and refreshes the session in cookies. “Remember me” controls whether those cookies persist for 400 days or until the browser session ends. Because this is a static site, these browser-managed cookies are JavaScript-readable, not `HttpOnly`; they are not server-verified sessions. Passwords exist only in transient React form state and are cleared after submission or changing modes; confirm password is checked locally and never sent to the provider. Account-existence-sensitive responses are kept generic.
 
 Signup displays inbox/spam-folder and same-browser confirmation instructions when Supabase requires email confirmation. It redirects to the shop immediately only if Supabase returns a session. Known provider errors now explain email-delivery restrictions, email/request rate limits, password requirements, unconfirmed emails, disabled signup and connection problems. A sanitized support reference identifies the provider code without showing raw backend messages, email addresses, credentials or session tokens. Unknown failures retain a generic message; existing-account responses do not disclose account existence.
 
@@ -45,7 +45,17 @@ For `email_address_not_authorized`, inspect the project's email delivery configu
 
 This project uses `output: "export"` to publish a static frontend, so it cannot use Next.js server components, route handlers, or middleware/proxy for session refresh. Session refresh is handled by the Supabase browser client instead. Configure the Supabase Auth site's URL and allowed redirect URLs for your local and production origins. Supabase Auth validates credentials and manages confirmation/reset links; enable row-level security and appropriate policies for any database access. If you need server-verified sessions or server-only secrets, remove static export and deploy with a Next.js server runtime.
 
-## Checks
+## Accounts and store management
+
+`/account/` provides saved products, contact/delivery details and saved order requests with their status history. `/admin/` provides product creation/editing, up to two photos, listed/guide/customisation prices, visibility, availability and optional stock quantities. The interface checks owner access through Supabase; all data permissions are enforced by database policies. Regular account metadata cannot grant owner access.
+
+The database must be activated before these shared features work. See [supabase/README.md](supabase/README.md) for the prepared migrations, catalogue seed and owner grant. Until activation, the original catalogue and WhatsApp checkout continue to work, and account features show an honest unavailable message. After activation, the shared catalogue is authoritative; product edits do not require a site rebuild. Local TypeScript catalogue data is retained as the pre-activation fallback and initial seed.
+
+Saving a request creates a server-priced record and reference. The customer still explicitly sends the WhatsApp draft. An owner can confirm, customise, mark ready, dispatch, deliver or cancel a request using valid transitions; updates appear in the customer's account. Stock is reserved on confirmation, not on a customer enquiry. Delivery details are copied into new requests; editing a profile does not rewrite past requests.
+
+Shop and account layouts use larger text, plain labels and phone navigation. Owner forms use 16px inputs and scrollable sheets with reachable close/save controls. Passwords and payment details are never stored in browser local storage.
+
+## Verification
 
 ```sh
 npm test

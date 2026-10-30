@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Check, CircleAlert, KeyRound, LoaderCircle, LockKeyhole, Mail, ShieldCheck, UserRound, X } from "lucide-react";
+import { ArrowRight, Check, CircleAlert, KeyRound, LoaderCircle, LockKeyhole, Mail, UserRound, X } from "lucide-react";
 import { FormField } from "./form-field";
 import { authAdapter, authErrorMessage, authErrorReference } from "@/lib/auth";
 import { useAccount } from "@/hooks/use-account";
@@ -89,8 +89,9 @@ export function AuthForm() {
         : await authAdapter.signUp({ name: values.name.trim(), email: values.email.trim(), password: values.password });
       if (login || result.authenticated) router.replace("/shop/");
       else setNotice({ message: result.message, error: false });
-    } catch (error) { setNotice({ message: authErrorMessage(error), error: true, reference: authErrorReference(error) }); }
-    finally { setPending(false); setValues(v => ({ ...v, password: "", confirmPassword: "" })); }
+    } catch (error) {
+      setNotice({ message: authErrorMessage(error), error: true, reference: authErrorReference(error) });
+    } finally { setPending(false); setValues(v => ({ ...v, password: "", confirmPassword: "" })); }
   }
 
   if (recoveringPassword) {
@@ -101,7 +102,7 @@ export function AuthForm() {
 
   return <div className="auth-content">
     <div className="welcome-icon" aria-hidden="true"><LockKeyhole size={23} strokeWidth={1.5}/><span><Check size={9} strokeWidth={3}/></span></div>
-    <div className="auth-heading"><div className="form-eyebrow">YOUR ROYAL SPACE</div><h2>{login ? "Welcome back." : "Make yourself at home."}</h2><p>{login ? "A world of great finds is waiting for you." : "Your next favourite find starts right here."}</p></div>
+    <div className="auth-heading"><h2>{login ? "Welcome back." : "Create your account"}</h2><p>{login ? "Log in to your Big B Royale account." : "Save products, delivery details and order requests."}</p></div>
     <div className={`auth-tabs ${!login ? "signup-active" : ""}`} role="tablist" aria-label="Account access">
       <span className="tab-indicator" aria-hidden="true"/>
       <button type="button" role="tab" id="tab-login" aria-selected={login} aria-controls="auth-panel" tabIndex={login ? 0 : -1} onKeyDown={handleTabKey} onClick={() => switchMode("login")} disabled={pending}>Log in</button>
@@ -118,8 +119,7 @@ export function AuthForm() {
         <button type="submit" className="primary-button" disabled={pending}>{pending ? <><LoaderCircle size={18} className="animate-spin"/>Please wait…</> : <>{login ? "Log in" : "Create account"}<ArrowRight size={18}/></>}</button>
       </form>
     </div>
-    <p className="switch-prompt">{login ? "New to the royal family?" : "Already part of the royal family?"} <button type="button" className="text-button" disabled={pending} onClick={() => { switchMode(login ? "signup" : "login"); document.getElementById(login ? "tab-signup" : "tab-login")?.focus(); }}>{login ? "Create an account" : "Log in"}<ArrowRight size={13}/></button></p>
-    <div className="security-note"><ShieldCheck size={16} strokeWidth={1.6}/><span>Your details deserve the royal treatment.</span></div>
+    <p className="switch-prompt">{login ? "New here?" : "Already have an account?"} <button type="button" className="text-button" disabled={pending} onClick={() => { switchMode(login ? "signup" : "login"); document.getElementById(login ? "tab-signup" : "tab-login")?.focus(); }}>{login ? "Create an account" : "Log in"}<ArrowRight size={13}/></button></p>
     <ResetPasswordDialog dialogRef={dialog} email={values.email}/>
   </div>;
 }
@@ -186,7 +186,7 @@ function ResetPasswordDialog({ dialogRef, email }: { dialogRef: React.RefObject<
   return <dialog className="reset-dialog" ref={dialogRef} aria-labelledby="reset-title" aria-describedby="reset-description" onClose={() => { setValue(""); setError(undefined); setNotice(null); }} onClick={event => { if (event.target === event.currentTarget) { const rect = event.currentTarget.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) event.currentTarget.close(); } }}>
     <button type="button" className="dialog-close" aria-label="Close password reset" onClick={() => dialogRef.current?.close()}><X size={20}/></button>
     <div className="reset-icon"><KeyRound size={25}/></div>
-    <h2 id="reset-title">A fresh start.</h2><p id="reset-description">Enter your email and we’ll help you get back to your royal space.</p>
+    <h2 id="reset-title">A fresh start.</h2><p id="reset-description">Enter your email to get a password reset link.</p>
     <form noValidate onSubmit={submit} aria-busy={pending}>
       <FormField id="reset-email" label="Email address" icon={Mail} type="email" value={value} autoComplete="email" placeholder={email || "you@example.com"} onChange={e => { setValue(e.target.value); setError(undefined); setNotice(null); }} error={error} required disabled={pending}/>
       <div aria-live="polite" aria-atomic="true">{notice && <div className={`form-notice ${notice.error ? "notice-error" : ""}`}><CircleAlert size={17}/><p>{notice.message}</p></div>}</div>

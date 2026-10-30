@@ -169,5 +169,6 @@
 @media (max-height: 500px) and (max-width: 950px) {
   .product-gallery.product-dialog-image { padding-block: 14px; gap: 8px; }
   .product-gallery-stage, .product-gallery-stage img { height: 110px; max-height: 110px; }
+  .product-gallery-stage { min-height: 0; flex: none; }
   .product-gallery > p { font-size: 11px; }
 }

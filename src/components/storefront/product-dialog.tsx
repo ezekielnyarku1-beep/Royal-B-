@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ArrowRight, Info, ShoppingBag, X } from "lucide-react";
-import { priceLabel, type Product } from "@/lib/catalogue";
+import { availabilityLabel, priceLabel, type Product } from "@/lib/catalogue";
 import { MAX_CUSTOMIZATION_LENGTH, MAX_QUANTITY, type CartItem } from "@/lib/cart";
 import { QuantityControl } from "./quantity-control";
 import { ProductGallery } from "./product-gallery";
@@ -20,7 +20,7 @@ export function ProductDialogContent({ product, onClose, onAdd }: { product: Pro
       <form className="product-dialog-content" onSubmit={event => { event.preventDefault(); setError(onAdd({ productId: product.id, quantity, customization, optionId, referenceImage: selectedImage !== product.image ? selectedImage : undefined }) || ""); }}>
         <div className="shop-eyebrow">{product.category}{product.isSample && " · Sample product"}</div>
         <h2 id="product-dialog-title">{product.name}</h2>
-        <p className="detail-price" aria-live="polite" aria-atomic="true">{priceLabel(product, optionId)}</p><p className="availability"><span/>Confirm Availability</p>
+        <p className="detail-price" aria-live="polite" aria-atomic="true">{priceLabel(product, optionId)}</p><p className="availability"><span/>{availabilityLabel(product)}</p>
         {product.priceIsEstimate && <p className="price-guide-note">Most watches are GH₵200. The seller will confirm the price for your selected model.</p>}
         <p className="product-description">{product.description}</p>
         <ProductPriceOptions product={product} optionId={optionId} onChange={value => { setOptionId(value); setError(""); }}/>
@@ -31,7 +31,7 @@ export function ProductDialogContent({ product, onClose, onAdd }: { product: Pro
         <div className="product-quantity-row"><span className="shop-label">Quantity</span><QuantityControl value={quantity} onChange={value => { setQuantity(value); setError(""); }} name={product.name}/></div>
         <p className="quantity-limit-note">Maximum {MAX_QUANTITY} per personalisation request. This is an enquiry limit; availability is confirmed by the seller.</p>
         {error && <p className="shop-inline-error" role="alert">{error}</p>}
-        <div className="product-purchase-bar"><button type="submit" className="shop-button"><ShoppingBag size={18}/>Add to bag<ArrowRight size={17}/></button></div>
+        <div className="product-purchase-bar"><button type="submit" className="shop-button" disabled={availabilityLabel(product) === "Unavailable"}><ShoppingBag size={18}/>{availabilityLabel(product) === "Unavailable" ? "Currently unavailable" : "Add to bag"}<ArrowRight size={17}/></button></div>
         <div className="product-disclaimer"><Info size={16}/><p>{product.isSample ? "This is a sample listing. " : ""}Prices, availability, styles and delivery charges are confirmed by the seller on WhatsApp. No online payment is required.</p></div>
       </form>
     </div>

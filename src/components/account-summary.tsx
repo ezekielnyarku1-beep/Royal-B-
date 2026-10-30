@@ -19,9 +19,10 @@ export function AccountSummary({ user }: { user: AccountUser }) {
 
   return <section className="auth-content account-summary" aria-labelledby="account-title" aria-busy={pending}>
     <div className="welcome-icon" aria-hidden="true"><ShieldCheck size={25} strokeWidth={1.5}/></div>
-    <div className="auth-heading"><div className="form-eyebrow">WELCOME TO THE ROYAL FAMILY</div><h2 id="account-title">Your royal space.</h2><p>{name ? `Good to see you, ${name}.` : "Good to see you again."}</p></div>
+    <div className="auth-heading"><h2 id="account-title">Your account</h2><p>{name ? `Good to see you, ${name}.` : "Good to see you again."}</p></div>
     <div className="account-details"><span>Signed in as</span><p>{user.email || "Big B Royale member"}</p></div>
     <Link href="/shop/" className="primary-button account-continue">Continue shopping<ArrowRight size={18}/></Link>
+    <Link href="/account/" className="account-signout">Manage my account<ArrowRight size={18}/></Link>
     <button type="button" className="account-signout" disabled={pending} onClick={signOut}><LogOut size={17}/>{pending ? "Signing out…" : "Sign out"}</button>
     {error && <p className="field-error" role="alert">{error}</p>}
     <p className="account-session-note">Sign out ends this browser’s session. Your shopping bag stays saved on this device.</p>
