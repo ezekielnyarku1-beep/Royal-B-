@@ -3,6 +3,7 @@ import path from "node:path";
 import { mkdir } from "node:fs/promises";
 
 test("adding at the quantity limit shows an error and allows a corrected request", async ({ page }) => {
+  await page.route('**/rest/v1/store_products*', route => route.fulfill({ status: 404, json: {} }));
   await page.goto("/shop/");
   await page.evaluate(() => localStorage.setItem("bbr-shopping-bag-v1", JSON.stringify([{ productId: "customized-bracelets", quantity: 99, customization: "" }])));
   await page.reload();
@@ -31,6 +32,7 @@ test("adding at the quantity limit shows an error and allows a corrected request
 });
 
 test("short landscape screens allow item editing, removal and checkout review", async ({ page, isMobile }) => {
+  await page.route('**/rest/v1/store_products*', route => route.fulfill({ status: 404, json: {} }));
   const directory = path.resolve(".sites-runtime/previews/mobile-check");
   if (isMobile) await mkdir(directory, { recursive: true });
   for (const viewport of [{ width: 568, height: 320 }, { width: 844, height: 390 }]) {

@@ -2,6 +2,10 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { products } from "../../src/lib/catalogue";
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/rest/v1/store_products*', route => route.fulfill({ status: 404, json: {} }));
+});
+
 test("shows supplied photos/prices and clearly labels the remaining sample products", async ({ page }) => {
   test.setTimeout(60000);
   await page.goto("/shop/");

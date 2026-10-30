@@ -1,6 +1,10 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/rest/v1/store_products*', route => route.fulfill({ status: 404, json: {} }));
+});
+
 test("jewellery and mirrors show their prices and carry them into WhatsApp", async ({ page }) => {
   await page.goto("/shop/");
   for (const [name, price] of [["Sculptural Cuff Bangle", "GH₵60.00"], ["Arched Floor Mirror", "GH₵360.00"]]) {

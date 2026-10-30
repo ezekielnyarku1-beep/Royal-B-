@@ -9,14 +9,14 @@ import { ProductImage } from "./product-card";
 import { ProductPriceOptions } from "./product-price-options";
 import { CheckoutActions } from "./checkout-actions";
 
-export function CartDrawer({ items, products, onClose, onUpdate, onOptionChange, onRemove }: { items: CartItem[]; products: Product[]; onClose: () => void; onUpdate: (key: string, quantity: number) => void; onOptionChange: (key: string, optionId: string) => string | null; onRemove: (key: string) => void }) {
+export function CartDrawer({ items, products, ready = true, onClose, onUpdate, onOptionChange, onRemove }: { items: CartItem[]; products: Product[]; ready?: boolean; onClose: () => void; onUpdate: (key: string, quantity: number) => void; onOptionChange: (key: string, optionId: string) => string | null; onRemove: (key: string) => void }) {
   const [optionError, setOptionError] = useState<{ key: string; message: string } | null>(null);
   const count = items.reduce((total, line) => total + line.quantity, 0);
   const message = items.length ? createOrderMessage(items, products) : "";
   const pricing = cartPricing(items, products);
   return <div className="cart-drawer-layout">
     <header className="cart-drawer-header"><div><h2 id="cart-dialog-title">Your bag <span>{count}</span></h2></div><button className="shop-icon-button" type="button" onClick={onClose} aria-label="Close shopping bag"><X size={23}/></button></header>
-    {items.length ? <>
+    {!ready ? <div className="cart-drawer-body" role="status">Loading your saved bag…</div> : items.length ? <>
       <div className="cart-drawer-body"><p className="cart-enquiry-note">Review your items before sending your request.</p>
         <ul className="cart-items">{items.map(item => {
           const product = products.find(p => p.id === item.productId)!;

@@ -23,7 +23,7 @@
 .product-save-button { position: absolute; top: 7px; right: 7px; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #e1e6ef; border-radius: 50%; background: #fff; color: #091a73; }
 .product-save-button[aria-pressed="true"] { color: #091a73; background: #edf1fc; }
 .product-save-button:hover { background: #f1f4fc; }
-.storefront .order-grid h2 { font-family: "Manrope", sans-serif; font-size: 29px; letter-spacing: -.6px; margin-top: 0; }
+.storefront .order-grid h2 { font-family: "Poppins", sans-serif; font-size: 29px; letter-spacing: -.6px; margin-top: 0; }
 .storefront .order-grid > div > p, .storefront .order-steps p { font-size: 15px; }
 .storefront .order-steps h3 { font-size: 17px; }
 .storefront .footer-grid h2 { font-size: 16px; }
@@ -64,7 +64,7 @@
   .storefront .product-purchase-bar { bottom: 16px; }
 }
 /* Shared editorial styling, with practical touch controls for the shop. */
-.storefront .hero-copy h1,.storefront .section-heading h2,.storefront .order-grid h2,.shop-help h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; letter-spacing: -.8px; }
+.storefront .hero-copy h1,.storefront .section-heading h2,.storefront .order-grid h2,.shop-help h2 { font-family: "Poppins", Arial, sans-serif; font-weight: 500; letter-spacing: -.8px; }
 .storefront .hero-copy h1 { font-size: clamp(36px,4vw,54px); }
 .storefront .section-heading h2,.shop-help h2 { font-size: clamp(28px,3vw,36px); }
 .storefront .shop-button { border-radius: 9px; min-height: 48px; font-size: 15px; }

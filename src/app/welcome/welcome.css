@@ -14,7 +14,7 @@ html:has(.royale-intro){scroll-behavior:smooth;scroll-padding-top:24px}
 .intro-copy{min-width:0}
 .intro-copy .intro-story{font-size:17px;line-height:1.85;max-width:470px;margin:26px 0 0;color:#e1e7fb;text-wrap:pretty}
 .intro-collection .intro-story{color:#526078}
-.intro-copy h1,.intro-copy h2,.intro-start h2{font-family:"Manrope",Arial,sans-serif;font-weight:500;line-height:1.14;letter-spacing:-2.3px;margin:0;text-wrap:balance}
+.intro-copy h1,.intro-copy h2,.intro-start h2{font-family:"Poppins",Arial,sans-serif;font-weight:500;line-height:1.14;letter-spacing:-2.3px;margin:0;text-wrap:balance}
 .intro-copy h1{font-size:clamp(38px,4.1vw,60px);line-height:1.22;letter-spacing:-2px}
 .intro-copy h1 span{font-family:Georgia,"Times New Roman",serif;font-size:1.18em;font-weight:400;letter-spacing:-2.5px}
 .intro-copy h2{font-size:clamp(38px,3.8vw,56px);line-height:1.2;letter-spacing:-1.8px}
@@ -34,7 +34,7 @@ html:has(.royale-intro){scroll-behavior:smooth;scroll-padding-top:24px}
 .intro-start{background:#fff;color:var(--intro-blue);padding:112px 24px;text-align:center}
 .intro-start-content{max-width:640px;margin:auto;display:flex;align-items:center;flex-direction:column}
 .intro-start .brand-logo{margin-bottom:40px}
-.intro-start h2{font-family:Georgia,"Times New Roman",serif;font-size:clamp(44px,5vw,64px);font-weight:400;letter-spacing:-1.8px}
+.intro-start h2{font-family:"Poppins",Arial,sans-serif;font-size:clamp(44px,5vw,64px);font-weight:500;letter-spacing:-1.8px}
 .intro-start p{max-width:420px;color:#526078;font-size:17px;line-height:1.75;margin:22px 0 32px}
 .intro-start-button{display:inline-flex;align-items:center;justify-content:space-between;gap:40px;min-width:260px;min-height:62px;padding:10px 12px 10px 24px;background:var(--intro-blue);color:white;border-radius:7px;font-size:17px;font-weight:600;text-decoration:none;transition:background-color .2s}
 .intro-start-button>span{display:grid;place-items:center;width:40px;height:40px;border:1px solid #ffffff4d;border-radius:4px}

@@ -1,5 +1,9 @@
 import { test, expect } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/rest/v1/store_products*', route => route.fulfill({ status: 404, json: {} }));
+});
+
 test("new watches, home items and gifts have their own photos and the supplied price types", async ({ page, isMobile }) => {
   await page.goto("/shop/");
   for (const [category, count] of [["Watches", 22], ["Gift Sets", 13], ["Home & Living", 12], ["Curtains", 4], ["Bedsheets", 4], ["Jewelry", 3]] as const) {
