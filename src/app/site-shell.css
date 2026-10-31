@@ -1,0 +1,35 @@
+﻿/* One shared, compact header, with a thumb-friendly menu on phones. */
+:root { --site-header-height: 68px; --site-mobile-nav-height: 64px; }
+body { padding-top: var(--site-header-height); }
+html { scroll-padding-top: calc(var(--site-header-height) + 16px); }
+.site-header { position: fixed; inset: 0 0 auto; z-index: 40; height: var(--site-header-height); background: var(--white); border-bottom: 1px solid var(--border); }
+.site-header-inner { max-width: 1240px; height: 100%; padding-inline: 24px; margin: auto; display: flex; align-items: center; gap: 24px; }
+.site-logo { flex-shrink: 0; display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+.site-logo .logo-mark { height: 40px; }
+.site-logo .logo-wordmark { font-size: 15px; letter-spacing: .6px; }
+.site-main-nav { display: flex; align-items: center; gap: 24px; margin-left: auto; height: 100%; }
+.site-main-nav a { position: relative; display: flex; align-items: center; justify-content: center; min-height: 44px; height: 100%; color: var(--blue); text-decoration: none; font-size: 14px; font-weight: 500; padding-inline: 4px; transition: transform .18s ease, opacity .18s ease; }
+.site-main-nav a > svg { display: none; }
+.site-main-nav a[aria-current="page"]::after { content: ''; position: absolute; bottom: 9px; left: 4px; right: 4px; height: 3px; background: var(--gold); border-radius: 2px; }
+.site-bag { display: flex; align-items: center; justify-content: center; gap: 6px; min-width: 52px; min-height: 44px; border: 0; background: transparent; color: var(--blue); border-radius: 8px; }
+.site-bag span { min-width: 18px; font-size: 12px; font-weight: 600; }
+.site-bag span[data-ready="false"] { visibility: hidden; }
+.site-bag:hover, .site-main-nav a:hover { background: var(--surface); }
+.site-footer { background: var(--white); border-top: 1px solid var(--border); color: var(--muted); }
+.site-footer > div { max-width: 1200px; margin: auto; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap; font-size: 12px; }
+.site-footer nav { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.site-footer a { display: inline-flex; align-items: center; min-height: 44px; color: var(--blue); text-decoration: none; transition: transform .18s ease, opacity .18s ease; }
+.site-main-nav a:active, .site-footer a:active { transform: scale(.98); }
+@media (max-width: 800px) {
+  :root { --site-header-height: calc(60px + env(safe-area-inset-top)); }
+  body { padding-bottom: calc(var(--site-mobile-nav-height) + env(safe-area-inset-bottom)); }
+  .site-header-inner { padding: env(safe-area-inset-top) 16px 0; gap: 12px; justify-content: space-between; }
+  .site-logo .logo-wordmark { font-size: 14px; }
+  .site-main-nav { position: fixed; inset: auto 0 0; margin: 0; height: calc(var(--site-mobile-nav-height) + env(safe-area-inset-bottom)); padding: 4px 8px env(safe-area-inset-bottom); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; background: var(--white); border-top: 1px solid var(--border); }
+  .site-main-nav a { flex-direction: column; gap: 4px; height: auto; min-width: 0; min-height: 56px; font-size: 12px; padding: 5px 2px; }
+  .site-main-nav a > svg { display: block; }
+  .site-main-nav a[aria-current="page"]::after { bottom: 1px; left: 22%; right: 22%; height: 2px; }
+  .site-footer > div { padding-inline: 16px; }
+}
+
+.shop-skip-link, .intro-skip, .workspace-skip { z-index: 60; }

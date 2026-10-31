@@ -12,7 +12,7 @@ test("shows supplied photos/prices and clearly labels the remaining sample produ
   await expect(page.getByRole("heading", { name: "Shop Big B Royale" })).toBeVisible();
   await expect(page.locator(".product-card")).toHaveCount(products.length);
   for (const [name, price] of [["Customized Bracelets", "GH₵130.00"], ["Personalized Name Necklaces", "GH₵100.00"], ["Photo-Customized Necklace", "GH₵140.00"], ["Customized Rings", "GH₵50.00"], ["Phone Charger", "GH₵150.00"]]) {
-    await expect(page.locator(".product-card").filter({ has: page.getByRole("heading", { name, exact: true }) }).locator(".product-price")).toHaveText(price);
+    await expect(page.locator(".product-card").filter({ has: page.getByRole("heading", { name, exact: true }) }).locator(".product-price")).toHaveText(price.replace("GH₵", "GH₵ "));
   }
   await expect(page.locator(".product-card").filter({ has: page.getByRole("heading", { name: "Wireless Earbuds", exact: true }) }).locator(".product-price")).toHaveText("Contact for Price");
   await expect(page.locator(".availability")).toHaveText(Array(products.length).fill("Confirm Availability"));
@@ -39,12 +39,17 @@ test("shows supplied photos/prices and clearly labels the remaining sample produ
 
 test("customised bag persists and produces the right WhatsApp draft without sending", async ({ page }) => {
   await page.goto("/shop/");
+  const productImage = page.locator(".product-card .product-image-fade").first();
+  await expect(productImage).toHaveAttribute("loading", "lazy");
+  await expect(productImage).toHaveAttribute("sizes", "(max-width: 760px) 45vw, (max-width: 1100px) 30vw, 280px");
+  await expect(productImage).toHaveAttribute("srcset", /-320\.webp 320w/);
+  await expect(productImage).toHaveAttribute("srcset", /-640\.webp 640w/);
   await page.getByRole("button", { name: "Choose options for Customized Bracelets", exact: true }).click();
   const product = page.getByRole("dialog", { name: "Customized Bracelets" });
   await expect(product).toBeVisible();
   await product.getByRole("button", { name: "Choose photo 2 of 2 for Customized Bracelets", exact: true }).click();
   await expect(product.getByRole("button", { name: "Choose photo 2 of 2 for Customized Bracelets", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(product.locator(".product-gallery-stage img")).toHaveAttribute("src", "/products/collection/bracelet-and-necklace-set.jpg");
+  await expect(product.locator(".product-gallery-stage img")).toHaveAttribute("src", /\/products\/optimized\/bracelet-and-necklace-set(?:-\d+)?\.webp$/);
   await product.getByLabel("Name, initials or personalisation").fill("Ama & Kofi · initials A+B");
   await product.getByRole("button", { name: "Increase quantity for Customized Bracelets" }).click();
   await product.getByRole("button", { name: "Add to bag" }).click();
@@ -54,7 +59,7 @@ test("customised bag persists and produces the right WhatsApp draft without send
   const bag = page.getByRole("dialog", { name: /^Your bag/ });
   await expect(bag.locator(".cart-customization")).toContainText("Ama & Kofi · initials A+B");
   await expect(bag.locator(".cart-style-reference")).toHaveText("Style reference: photo 2 of 2");
-  await expect(bag.locator(".cart-item-image img")).toHaveAttribute("src", "/products/collection/bracelet-and-necklace-set.jpg");
+  await expect(bag.locator(".cart-item-image img")).toHaveAttribute("src", /\/products\/optimized\/bracelet-and-necklace-set(?:-\d+)?\.webp$/);
   await expect(bag.locator(".cart-priced-subtotal")).toContainText("GH₵260.00");
   const checkout = bag.getByRole("link", { name: "Continue on WhatsApp" });
   const url = new URL((await checkout.getAttribute("href"))!);
@@ -81,7 +86,7 @@ test("separate photo listings retain their names and prices in the shopping bag"
   await page.goto("/shop/");
   for (const name of ["Kobby Style Bracelet", "Micheal Style Bracelet"]) {
     const card = page.locator(".product-card").filter({ has: page.getByRole("heading", { name, exact: true }) });
-    await expect(card.locator(".product-price")).toHaveText("GH₵130.00");
+    await expect(card.locator(".product-price")).toHaveText("GH₵ 130.00");
     await card.getByRole("button", { name: `Choose options for ${name}`, exact: true }).click();
     const dialog = page.getByRole("dialog", { name, exact: true });
     await expect(dialog.locator(".product-thumbnails button")).toHaveCount(0);

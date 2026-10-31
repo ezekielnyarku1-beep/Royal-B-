@@ -81,6 +81,27 @@ test("validates, toggles passwords, and never simulates authentication", async (
   expect(await page.evaluate(() => localStorage.length)).toBe(0);
 });
 
+test("Google OAuth is available from login and signup and returns to the shop", async ({ page }) => {
+  const authorizationURLs: URL[] = [];
+  await page.route("https://gangouwtzbymjlmlumiu.supabase.co/auth/v1/authorize**", async route => {
+    authorizationURLs.push(new URL(route.request().url()));
+    await route.fulfill({ status: 200, contentType: "text/html", body: "OAuth test interception" });
+  });
+
+  await page.goto("/login/");
+  await page.getByRole("button", { name: "Continue with Google" }).click();
+  await expect.poll(() => authorizationURLs.length).toBe(1);
+  expect(authorizationURLs[0].searchParams.get("provider")).toBe("google");
+  expect(authorizationURLs[0].searchParams.get("redirect_to")).toBe("http://localhost:3000/shop/");
+
+  await page.goto("/login/");
+  await page.getByRole("tab", { name: "Sign up" }).click();
+  await page.getByRole("button", { name: "Continue with Google" }).click();
+  await expect.poll(() => authorizationURLs.length).toBe(2);
+  expect(authorizationURLs[1].searchParams.get("provider")).toBe("google");
+  expect(authorizationURLs[1].searchParams.get("redirect_to")).toBe("http://localhost:3000/shop/");
+});
+
 test("remember me controls whether Supabase session cookies persist", async ({ page }) => {
   await mockSuccessfulSignIn(page);
   await page.goto("/login/");
@@ -121,7 +142,7 @@ test("login returns shoppers to the store with their custom bag intact", async (
   await options.getByLabel("Name, initials or cover request").fill("Ama · blue cover, please");
   await options.getByRole("button", { name: "Increase quantity for Personalized Diaries" }).click();
   await options.getByRole("button", { name: "Add to bag" }).click();
-  await page.getByRole("link", { name: "Log in or sign up" }).click();
+  await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Account", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Welcome back." })).toBeVisible();
   if (isMobile) await page.screenshot({ path: path.join(directory, "login.png"), fullPage: true, animations: "disabled" });
 
@@ -152,13 +173,13 @@ test("signed-in shoppers can view their account, reload and sign out without los
   await page.goto("/shop/");
   await page.getByRole("button", { name: "Choose options for Customized Bracelets", exact: true }).click();
   await page.getByRole("button", { name: "Add to bag", exact: true }).click();
-  await page.getByRole("link", { name: "Log in or sign up" }).click();
+  await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Account", exact: true }).click();
   await page.getByRole("textbox", { name: "Email address", exact: true }).fill("ama@example.com");
   await page.getByLabel("Password", { exact: true }).fill("test-only passphrase");
   await page.getByText("Remember me", { exact: true }).click();
   await page.getByRole("button", { name: "Log in", exact: true }).click();
   await expect(page).toHaveURL(/\/shop\//);
-  await page.getByRole("link", { name: "Your account", exact: true }).first().click();
+  await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Account", exact: true }).click();
   await expect(page.getByRole("heading", { name: "My account" })).toBeVisible();
   await expect(page.getByText("ama@example.com", { exact: true })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Log in", exact: true })).toHaveCount(0);
@@ -176,9 +197,9 @@ test("signed-in shoppers can view their account, reload and sign out without los
   expect(cookies.some(cookie => cookie.name === "bbr-remember-session")).toBe(false);
   await page.reload();
   await expect(page.getByRole("tab", { name: "Log in", exact: true })).toBeVisible();
-  await page.getByRole("link", { name: "Visit the store" }).click();
+  await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Shopping", exact: true }).click();
   await expect(page.getByRole("button", { name: "Open shopping bag, 1 item" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Log in or sign up" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Account", exact: true })).toBeVisible();
 });
 
 test("signup validates confirmation and clears passwords between tabs", async ({ page }) => {

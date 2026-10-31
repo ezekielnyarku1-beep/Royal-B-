@@ -25,7 +25,7 @@ export function CartDrawer({ items, products, ready = true, onClose, onUpdate, o
           const option = product.priceOptions?.find(option => option.id === item.optionId);
           const lineName = option ? `${product.name}, ${option.label}` : product.name;
           return <li className="cart-item" key={key}>
-            <div className="cart-item-image"><ProductImage product={product} src={item.referenceImage || product.image}/>{product.imageIsPlaceholder && <span>Placeholder</span>}</div>
+            <div className="cart-item-image"><ProductImage product={product} src={item.referenceImage || product.image} sizes="84px"/>{product.imageIsPlaceholder && <span>Placeholder</span>}</div>
             <div className="cart-item-info"><h3>{product.name}</h3><span className="cart-item-price">{product.priceOptions && price === null ? "Choose customisation for price" : priceLabel(product, item.optionId)}</span>
               {price !== null && <span className="cart-line-subtotal">{product.priceIsEstimate && "Estimated: "}{item.quantity} × {formatPrice(price)} = {formatPrice(lineSubtotalGhs(product, item.quantity, item.optionId)!)}</span>}
               <ProductPriceOptions product={product} optionId={item.optionId} compact onChange={value => { const message = onOptionChange(key, value); setOptionError(message ? { key, message } : null); }}/>

@@ -9,6 +9,7 @@ export type AuthResult = { message: string; authenticated?: boolean };
 
 export interface AuthAdapter {
   signIn(input: { email: string; password: string; remember: boolean }): Promise<AuthResult>;
+  signInWithGoogle(input: { remember: boolean }): Promise<void>;
   signUp(input: { name: string; email: string; password: string }): Promise<AuthResult>;
   resetPassword(input: { email: string }): Promise<{ message: string }>;
   updatePassword(input: { password: string }): Promise<{ message: string }>;
@@ -30,6 +31,22 @@ export const authAdapter: AuthAdapter = {
     }
     setRememberSession(remember, true);
     return { message: "You're signed in.", authenticated: true };
+  },
+
+  async signInWithGoogle({ remember }) {
+    const previousRememberChoice = getRememberSession();
+    setRememberSession(remember, true);
+    try {
+      const { data, error } = await createClient().auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/shop/` },
+      });
+      if (error) throw error;
+      if (!data.url) throw new Error("Google authentication did not return a redirect URL.");
+    } catch (error) {
+      setRememberSession(previousRememberChoice, true);
+      throw error;
+    }
   },
 
   async signUp({ name, email, password }) {

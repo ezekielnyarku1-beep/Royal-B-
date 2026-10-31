@@ -9,7 +9,7 @@ test("jewellery and mirrors show their prices and carry them into WhatsApp", asy
   await page.goto("/shop/");
   for (const [name, price] of [["Sculptural Cuff Bangle", "GH₵60.00"], ["Arched Floor Mirror", "GH₵360.00"]]) {
     await page.getByRole("textbox", { name: "Search products", exact: true }).fill(name);
-    await expect(page.locator(".product-price")).toHaveText([price]);
+    await expect(page.locator(".product-price")).toHaveText([price.replace("GH₵", "GH₵ ")]);
     await page.getByRole("button", { name: `Choose options for ${name}`, exact: true }).click();
     await expect(page.locator(".detail-price")).toHaveText(price);
     await page.getByRole("button", { name: "Add to bag", exact: true }).click();
@@ -28,11 +28,11 @@ test("power-bank capacities are searchable and watch totals remain guide prices"
   await page.goto("/shop/");
   const search = page.getByRole("textbox", { name: "Search products", exact: true });
   await search.fill("20000");
-  await expect(page.locator(".product-price")).toHaveText(["GH₵200.00"]);
+  await expect(page.locator(".product-price")).toHaveText(["GH₵ 200.00"]);
   await search.fill("10000");
-  await expect(page.locator(".product-price")).toHaveText(["GH₵150.00", "GH₵150.00"]);
+  await expect(page.locator(".product-price")).toHaveText(["GH₵ 150.00", "GH₵ 150.00"]);
   await search.fill("Rose Tone Black Dial Watch");
-  await expect(page.locator(".product-price")).toHaveText(["About GH₵200.00"]);
+  await expect(page.locator(".product-price")).toHaveText(["From GH₵ 200.00"]);
   await page.getByRole("button", { name: "Choose options for Rose Tone Black Dial Watch", exact: true }).click();
   await expect(page.locator(".price-guide-note")).toContainText("seller will confirm the price");
   await page.getByRole("button", { name: "Add to bag", exact: true }).click();

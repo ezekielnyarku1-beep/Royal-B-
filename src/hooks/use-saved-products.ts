@@ -22,11 +22,16 @@ export function useSavedProducts() {
     if (!user) { setError("Sign in to save products to your account."); return; }
     if (pending.includes(productId)) return;
     const userId = user.id; const save = !ids.includes(productId);
+    setIds(items => save ? [...new Set([...items, productId])] : items.filter(id => id !== productId));
     setPending(items => [...items, productId]); setError("");
     try {
       await setFavorite(userId, productId, save);
-      if (currentUser.current === userId) setIds(items => save ? [...new Set([...items, productId])] : items.filter(id => id !== productId));
-    } catch (failure) { if (currentUser.current === userId) setError(commerceError(failure)); }
+    } catch (failure) {
+      if (currentUser.current === userId) {
+        setIds(items => save ? items.filter(id => id !== productId) : [...new Set([...items, productId])]);
+        setError(commerceError(failure));
+      }
+    }
     finally { if (currentUser.current === userId) setPending(items => items.filter(id => id !== productId)); }
   }
   return { ids, pending, error, loadError, loading, clearError: () => setError(""), toggle, user, accountLoading };

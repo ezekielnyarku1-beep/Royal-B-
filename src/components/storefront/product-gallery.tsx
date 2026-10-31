@@ -6,10 +6,10 @@ export function ProductGallery({ product, selectedImage, onSelect }: { product: 
   const images = productImages(product);
   const selectedIndex = images.indexOf(selectedImage);
   return <div className="product-dialog-image product-gallery">
-    <div className="product-gallery-stage"><ProductImage product={product} src={selectedImage}/></div>
+    <div className="product-gallery-stage"><ProductImage product={product} src={selectedImage} sizes="(max-width: 760px) calc(100vw - 48px), 44vw"/></div>
     {images.length > 1 && <>
       <div className="product-thumbnails" role="group" aria-label={`Photos for ${product.name}`}>
-        {images.map((src, index) => <button key={src} type="button" aria-label={`Choose photo ${index + 1} of ${images.length} for ${product.name}`} aria-pressed={selectedImage === src} onClick={() => onSelect(src)}><img src={src} alt="" width="56" height="56" loading="lazy"/></button>)}
+        {images.map((src, index) => <button key={src} type="button" aria-label={`Choose photo ${index + 1} of ${images.length} for ${product.name}`} aria-pressed={selectedImage === src} onClick={() => onSelect(src)}><ProductImage product={product} src={src} sizes="56px" decorative/></button>)}
       </div>
       <p className="gallery-photo-reference">Selected style reference: photo {selectedIndex + 1} of {images.length}. Included with your enquiry.</p>
     </>}

@@ -130,7 +130,10 @@ export const products: Product[] = [...baseProducts.flatMap(product => [
   })),
 ]), ...additionalProducts].map(product => applyCollectionPricing({ ...product, ...cataloguePhotoUpdates[product.id] }));
 
-export const categories = [...new Set(products.map(product => product.category))];
+// Keep illustrated entries in the data; replace their photo and clear this flag to publish.
+export function isStorefrontProduct(product: Product): boolean { return !product.imageIsPlaceholder; }
+
+export const categories = [...new Set(products.filter(isStorefrontProduct).map(product => product.category))];
 
 export function productImages(product: Product): string[] {
   return [...new Set([product.image, ...(product.gallery ?? [])])];
@@ -152,7 +155,7 @@ export function lineSubtotalGhs(product: Product, quantity: number, optionId?: s
 export function priceLabel(product: Product, optionId?: string): string {
   if (product.priceOptions && !optionId) return `From ${formatPrice(Math.min(...product.priceOptions.map(option => option.priceGhs)))}`;
   const price = unitPriceGhs(product, optionId);
-  return price === null ? "Contact for Price" : `${product.priceIsEstimate ? "About " : ""}${formatPrice(price)}`;
+  return price === null ? "Contact for Price" : `${product.priceIsEstimate ? "From " : ""}${formatPrice(price)}`;
 }
 
 export function availabilityLabel(product: Product): string {

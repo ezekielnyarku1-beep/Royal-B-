@@ -19,11 +19,12 @@ export function AuthForm() {
   const [values, setValues] = useState<AuthValues>(initialValues);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
-  const [pending, setPending] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"password" | "google" | null>(null);
   const [notice, setNotice] = useState<Notice>(null);
   const [recoveringPassword, setRecoveringPassword] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const login = mode === "login";
+  const pending = pendingAction !== null;
 
   useEffect(() => {
     try {
@@ -82,7 +83,7 @@ export function AuthForm() {
       document.getElementById(order.find(k => validated[k])!)?.focus();
       return;
     }
-    setPending(true);
+    setPendingAction("password");
     try {
       const result = login
         ? await authAdapter.signIn({ email: values.email.trim(), password: values.password, remember: values.remember })
@@ -91,7 +92,20 @@ export function AuthForm() {
       else setNotice({ message: result.message, error: false });
     } catch (error) {
       setNotice({ message: authErrorMessage(error), error: true, reference: authErrorReference(error) });
-    } finally { setPending(false); setValues(v => ({ ...v, password: "", confirmPassword: "" })); }
+    } finally { setPendingAction(null); setValues(v => ({ ...v, password: "", confirmPassword: "" })); }
+  }
+
+  async function signInWithGoogle() {
+    if (pending) return;
+    setPendingAction("google");
+    setNotice(null);
+    try {
+      await authAdapter.signInWithGoogle({ remember: login && values.remember });
+    } catch (error) {
+      setNotice({ message: authErrorMessage(error), error: true, reference: authErrorReference(error) });
+    } finally {
+      setPendingAction(null);
+    }
   }
 
   if (recoveringPassword) {
@@ -117,11 +131,25 @@ export function AuthForm() {
         {login && <div className="form-options"><label className="remember"><input type="checkbox" checked={values.remember} disabled={pending} onChange={e => setValues(v => ({ ...v, remember: e.target.checked }))}/><span>Remember me</span></label><button className="text-button" type="button" onClick={() => dialog.current?.showModal()}>Forgot password?</button></div>}
         <div aria-live="polite" aria-atomic="true">{notice && <div className={`form-notice ${notice.error ? "notice-error" : ""}`}><CircleAlert size={17} aria-hidden="true"/><p>{notice.message}{notice.reference && <small className="auth-error-reference">Support reference: {notice.reference}</small>}</p></div>}</div>
         <button type="submit" className="primary-button" disabled={pending}>{pending ? <><LoaderCircle size={18} className="animate-spin"/>Please wait…</> : <>{login ? "Log in" : "Create account"}<ArrowRight size={18}/></>}</button>
+        <div className="auth-divider"><span>or continue with</span></div>
+        <button type="button" className="google-button" disabled={pending} onClick={signInWithGoogle}>
+          {pendingAction === "google" ? <LoaderCircle size={19} className="animate-spin" aria-hidden="true"/> : <GoogleMark/>}
+          {pendingAction === "google" ? "Connecting to Google…" : "Continue with Google"}
+        </button>
       </form>
     </div>
     <p className="switch-prompt">{login ? "New here?" : "Already have an account?"} <button type="button" className="text-button" disabled={pending} onClick={() => { switchMode(login ? "signup" : "login"); document.getElementById(login ? "tab-signup" : "tab-login")?.focus(); }}>{login ? "Create an account" : "Log in"}<ArrowRight size={13}/></button></p>
     <ResetPasswordDialog dialogRef={dialog} email={values.email}/>
   </div>;
+}
+
+function GoogleMark() {
+  return <svg aria-hidden="true" viewBox="0 0 48 48" width="20" height="20">
+    <path fill="var(--blue)" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.9 6.1-15z"/>
+    <path fill="var(--blue)" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.6-5.1c-1.8 1.2-4.1 2-6.9 2-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20 20 0 0 0 24 44z"/>
+    <path fill="var(--blue)" d="M12.6 27.6a12 12 0 0 1 0-7.2v-5.3H5.8a20 20 0 0 0 0 17.8l6.8-5.3z"/>
+    <path fill="var(--blue)" d="M24 12c3 0 5.7 1 7.8 3.1l5.8-5.8A19.4 19.4 0 0 0 24 4 20 20 0 0 0 5.8 15.1l6.8 5.3C14.2 15.6 18.7 12 24 12z"/>
+  </svg>;
 }
 
 function PasswordRecoveryForm({ onComplete }: { onComplete: () => void }) {
