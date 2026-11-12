@@ -20,7 +20,7 @@ export default function WelcomePage() {
       <section className="intro-hero" aria-labelledby="intro-welcome-title">
         <div className="intro-copy">
           <p className="intro-eyebrow">PERSONAL TOUCHES. PROUDLY GHANAIAN.</p>
-          <h1 id="intro-welcome-title">Your ideas.<br/>Your style.<br/><em>Big B Royale.</em></h1>
+          <h1 id="intro-welcome-title"><em>Big B Royale.</em></h1>
           <p>Personalised gifts, watches, jewellery and home essentials. Find something for yourself or make a thoughtful gift your own.</p>
           <div className="intro-actions"><Link className="intro-primary" href="/shop/">Shop the collection</Link><a className="intro-chat" href={contactUrl} target="_blank" rel="noopener noreferrer"><MessageCircle size={18}/>WhatsApp us</a></div>
           <span className="intro-caption">Browse freely. Confirm your order on WhatsApp.</span>
