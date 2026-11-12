@@ -75,7 +75,7 @@ const baseProducts: Product[] = [
     customizationLabel: "Phone model and connection", customizationHint: "Your phone model, charging connection and any questions",
   },
   {
-    id: "wireless-earbuds", name: "Wireless Earbuds", category: "Electronics", priceGhs: null,
+    id: "wireless-earbuds", name: "Wireless Earbuds", category: "Electronics", priceGhs: 45,
     description: "Ask about the earbuds shown in the supplied photo. Pricing, product details and compatibility are confirmed directly by the seller.",
     image: "/products/collection/wireless-earbuds.jpg", imageIsPlaceholder: false, isSample: false, availability: "confirm",
     customizationLabel: "Preferences or questions", customizationHint: "Your device model, preferred options or questions for the seller",

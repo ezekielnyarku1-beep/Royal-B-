@@ -5,6 +5,30 @@ test.beforeEach(async ({ page }) => {
   await page.route('**/rest/v1/store_products*', route => route.fulfill({ status: 404, json: {} }));
 });
 
+test("shop-by-category tiles are removed while catalogue category filters remain", async ({ page }) => {
+  await page.goto("/shop/");
+  await expect(page.getByRole("heading", { name: "Shop by category" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Explore all categories" })).toHaveCount(0);
+  await expect(page.locator(".category-grid")).toHaveCount(0);
+  await expect(page.getByRole("group", { name: "Filter products by category" }).getByRole("button", { name: "Bracelets", exact: true })).toBeVisible();
+});
+
+test("updated bracelet and watch guide prices are shown on their product cards", async ({ page }) => {
+  await page.goto("/shop/");
+  const search = page.getByRole("textbox", { name: "Search products", exact: true });
+  for (const [name, price] of [["Braided Initial Bracelet", "GH₵ 120.00"], ["Crown Name Bracelet", "GH₵ 150.00"]]) {
+    await search.fill(name);
+    await expect(page.locator(".product-price")).toHaveText([price]);
+  }
+  await search.fill("Wireless Earbuds");
+  const earbudsCard = page.locator(".product-card").filter({ has: page.getByRole("heading", { name: "Wireless Earbuds", exact: true }) });
+  await expect(earbudsCard.locator(".product-price")).toHaveText("GH₵ 45.00");
+  for (const name of ["Rose Tone Black Dial Watch", "Black Floral Dial Watch", "Blue Link Grey Dial Watch", "Rose Tone Mesh Brown Dial Watch", "Black Detail Black Strap Watch"]) {
+    await search.fill(name);
+    await expect(page.locator(".product-price")).toHaveText(["From GH₵ 250.00"]);
+  }
+});
+
 test("jewellery and mirrors show their prices and carry them into WhatsApp", async ({ page }) => {
   await page.goto("/shop/");
   for (const [name, price] of [["Sculptural Cuff Bangle", "GH₵60.00"], ["Arched Floor Mirror", "GH₵360.00"]]) {
@@ -32,7 +56,7 @@ test("power-bank capacities are searchable and watch totals remain guide prices"
   await search.fill("10000");
   await expect(page.locator(".product-price")).toHaveText(["GH₵ 150.00", "GH₵ 150.00"]);
   await search.fill("Rose Tone Black Dial Watch");
-  await expect(page.locator(".product-price")).toHaveText(["From GH₵ 200.00"]);
+  await expect(page.locator(".product-price")).toHaveText(["From GH₵ 250.00"]);
   await page.getByRole("button", { name: "Choose options for Rose Tone Black Dial Watch", exact: true }).click();
   await expect(page.locator(".price-guide-note")).toContainText("seller will confirm the price");
   await page.getByRole("button", { name: "Add to bag", exact: true }).click();
@@ -40,8 +64,8 @@ test("power-bank capacities are searchable and watch totals remain guide prices"
   const bag = page.getByRole("dialog", { name: /^Your bag/ });
   await expect(bag.locator(".cart-priced-subtotal")).toContainText("Estimated items subtotal");
   const message = new URL((await bag.getByRole("link", { name: "Continue on WhatsApp" }).getAttribute("href"))!).searchParams.get("text")!;
-  expect(message).toContain("Guide unit price: GHS 200.00");
-  expect(message).toContain("Estimated items subtotal: GHS 200.00");
+  expect(message).toContain("Guide unit price: GHS 250.00");
+  expect(message).toContain("Estimated items subtotal: GHS 250.00");
 });
 
 test("set customisation updates prices, persists and merges matching options in the bag", async ({ page }) => {

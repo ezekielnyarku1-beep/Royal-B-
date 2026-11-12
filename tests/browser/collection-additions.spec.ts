@@ -9,7 +9,10 @@ test("new watches, home items and gifts have their own photos and the supplied p
   for (const [category, count] of [["Watches", 22], ["Gift Sets", 13], ["Home & Living", 12], ["Curtains", 4], ["Bedsheets", 4], ["Jewelry", 3]] as const) {
     await page.getByRole("button", { name: category, exact: true }).click();
     await expect(page.locator(".product-card")).toHaveCount(count);
-    if (category === "Watches") await expect(page.locator(".product-price")).toHaveText(Array(count).fill("About GH₵ 200.00"));
+    if (category === "Watches") {
+      await expect(page.locator(".product-price").filter({ hasText: "From GH₵ 250.00" })).toHaveCount(5);
+      await expect(page.locator(".product-price").filter({ hasText: "From GH₵ 200.00" })).toHaveCount(count - 5);
+    }
     else if (category === "Gift Sets") {
       await expect(page.locator(".product-price").filter({ hasText: "From GH₵ 350.00" })).toHaveCount(10);
       await expect(page.locator(".product-price").filter({ hasText: "Contact for Price" })).toHaveCount(3);

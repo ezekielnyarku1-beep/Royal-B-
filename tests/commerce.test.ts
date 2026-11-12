@@ -14,6 +14,11 @@ test("catalogue uses exactly the owner-supplied prices and never invents stock",
     ["photo-customized-necklace", 140], ["customized-rings", 50], ["phone-charger", 150], ["white-charger-cable-kit", 150],
     ["built-in-cable-power-bank", 200], ["carry-loop-power-bank", 150], ["suction-style-power-bank", 150],
     ["rectangular-floor-mirror", 360], ["arched-floor-mirror", 360],
+    ["crown-name-bracelet", 150], ["braided-initial-bracelet", 120],
+    ["fashion-watches", 250], ["watch-black-floral-dial", 250], ["watch-blue-link-grey-dial", 250],
+    ["watch-rose-mesh-brown-dial", 250],
+    ["watch-black-detail-black-strap", 250],
+    ["wireless-earbuds", 45],
   ]);
   for (const product of products) {
     const categoryPrices: Record<string, number> = { Bracelets: 130, Necklaces: 100, Rings: 50, Jewelry: 60 };
@@ -87,16 +92,22 @@ test("all two- and three-piece watch sets have explicit plain and customised pri
 
 test("watch estimates stay explicit while power-bank prices use the supplied capacities", () => {
   const watches = products.filter(product => product.category === "Watches");
-  assert.ok(watches.every(product => product.priceGhs === 200 && product.priceIsEstimate));
+  const updatedPriceWatchIds = ["fashion-watches", "watch-black-floral-dial", "watch-blue-link-grey-dial", "watch-rose-mesh-brown-dial", "watch-black-detail-black-strap"];
+  assert.ok(watches.filter(product => !updatedPriceWatchIds.includes(product.id)).every(product => product.priceGhs === 200 && product.priceIsEstimate));
+  for (const id of updatedPriceWatchIds) {
+    const watch = watches.find(product => product.id === id)!;
+    assert.equal(watch.priceGhs, 250);
+    assert.equal(watch.priceIsEstimate, true);
+  }
   const bag = [
     { productId: "fashion-watches", quantity: 1, customization: "" },
     { productId: "built-in-cable-power-bank", quantity: 1, customization: "" },
     { productId: "carry-loop-power-bank", quantity: 1, customization: "" },
   ];
-  assert.deepEqual(cartPricing(bag, products), { pricedSubtotal: 550, pricedQuantity: 3, unpricedQuantity: 0, hasEstimate: true });
+  assert.deepEqual(cartPricing(bag, products), { pricedSubtotal: 600, pricedQuantity: 3, unpricedQuantity: 0, hasEstimate: true });
   const message = createOrderMessage(bag, products);
-  assert.match(message, /Guide unit price: GHS 200\.00/);
-  assert.match(message, /Estimated items subtotal: GHS 550\.00/);
+  assert.match(message, /Guide unit price: GHS 250\.00/);
+  assert.match(message, /Estimated items subtotal: GHS 600\.00/);
   assert.match(message, /confirm the final price for the selected model/);
   assert.match(message, /Listed unit price: GHS 150\.00/);
 });
@@ -230,7 +241,7 @@ test("WhatsApp draft includes products, quantities, preferences and quote reques
   assert.equal(url.searchParams.get("text"), message);
 });
 
-test("WhatsApp drafts include selected styles, unpriced quotes and photo-customisation instructions", () => {
+test("WhatsApp drafts include selected styles, listed prices and photo-customisation instructions", () => {
   const referenceImage = productImages(products[0])[1];
   const message = createOrderMessage([
     { productId: "customized-bracelets", quantity: 2, customization: "Ama", referenceImage },
@@ -240,9 +251,8 @@ test("WhatsApp drafts include selected styles, unpriced quotes and photo-customi
   assert.match(message, /Style reference: photo 2 of 2/);
   assert.match(message, /bracelet-and-necklace-set\.jpg/);
   assert.match(message, /Photo customisation: I will send my photo in this chat/);
-  assert.match(message, /Priced items subtotal: GHS 400\.00/);
-  assert.match(message, /Please quote for 1 item\(s\) without a listed price/);
-  assert.match(message, /Price: please quote/);
+  assert.match(message, /Listed unit price: GHS 45\.00/);
+  assert.match(message, /Items subtotal: GHS 445\.00/);
 });
 
 test("invalid recipients and empty or stale enquiries cannot create checkout", () => {

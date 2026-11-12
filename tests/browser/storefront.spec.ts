@@ -14,7 +14,7 @@ test("shows supplied photos/prices and clearly labels the remaining sample produ
   for (const [name, price] of [["Customized Bracelets", "GH₵130.00"], ["Personalized Name Necklaces", "GH₵100.00"], ["Photo-Customized Necklace", "GH₵140.00"], ["Customized Rings", "GH₵50.00"], ["Phone Charger", "GH₵150.00"]]) {
     await expect(page.locator(".product-card").filter({ has: page.getByRole("heading", { name, exact: true }) }).locator(".product-price")).toHaveText(price.replace("GH₵", "GH₵ "));
   }
-  await expect(page.locator(".product-card").filter({ has: page.getByRole("heading", { name: "Wireless Earbuds", exact: true }) }).locator(".product-price")).toHaveText("Contact for Price");
+  await expect(page.locator(".product-card").filter({ has: page.getByRole("heading", { name: "Wireless Earbuds", exact: true }) }).locator(".product-price")).toHaveText("GH₵ 45.00");
   await expect(page.locator(".availability")).toHaveText(Array(products.length).fill("Confirm Availability"));
   await expect(page.locator(".placeholder-label").filter({ hasText: "Illustrative placeholder" })).toHaveCount(3);
   await expect(page.locator(".placeholder-label").filter({ hasText: "Pendant style reference" })).toHaveCount(0);
@@ -138,16 +138,15 @@ test("photo-necklace instructions and mixed-price checkout stay clear", async ({
   await dialog.getByRole("button", { name: "Add to bag", exact: true }).click();
   await page.getByRole("button", { name: "Choose options for Wireless Earbuds", exact: true }).click();
   dialog = page.getByRole("dialog", { name: "Wireless Earbuds" });
-  await expect(dialog.locator(".detail-price")).toHaveText("Contact for Price");
+  await expect(dialog.locator(".detail-price")).toHaveText("GH₵45.00");
   await dialog.getByRole("button", { name: "Add to bag", exact: true }).click();
   await page.getByRole("button", { name: "Open shopping bag, 2 items" }).click();
   const bag = page.getByRole("dialog", { name: /^Your bag/ });
   await expect(bag.locator(".cart-priced-subtotal")).toContainText("Priced items subtotal");
-  await expect(bag.locator(".cart-priced-subtotal")).toContainText("GH₵140.00");
-  await expect(bag.locator(".cart-checkout")).toContainText("1 item needs a quote");
+  await expect(bag.locator(".cart-priced-subtotal")).toContainText("GH₵185.00");
   await expect(bag.locator(".cart-checkout")).toContainText("Final total with delivery");
   const message = new URL((await bag.getByRole("link", { name: "Continue on WhatsApp" }).getAttribute("href"))!).searchParams.get("text")!;
   expect(message).toContain("Photo customisation: I will send my photo in this chat");
-  expect(message).toContain("Priced items subtotal: GHS 140.00");
-  expect(message).toContain("Please quote for 1 item(s)");
+  expect(message).toContain("Listed unit price: GHS 45.00");
+  expect(message).toContain("Priced items subtotal: GHS 185.00");
 });

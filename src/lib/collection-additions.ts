@@ -21,7 +21,7 @@ export const cataloguePhotoUpdates: Record<string, Partial<Product>> = {
     description: "A sculptural cuff style for your jewellery collection. Confirm sizing, finish and pricing directly with the seller.",
   },
   "fashion-watches": {
-    name: "Rose Tone Black Dial Watch", image: imagePath("watch-rose-black"), imageIsPlaceholder: false, isSample: false,
+    name: "Rose Tone Black Dial Watch", image: imagePath("watch-rose-black"), imageIsPlaceholder: false, isSample: false, priceGhs: 250,
     description: "Enquire about the rose-tone watch with a black dial shown in this photo. Confirm the exact model, strap size and product details with the seller.",
     imageNote: "Photo supplied for this watch style. Confirm the exact model, finish and package contents before ordering.",
   },
@@ -41,7 +41,7 @@ const watchSetIds = new Set([
 export function applyCollectionPricing(product: Product): Product {
   if (product.category === "Jewelry") return { ...product, priceGhs: 60 };
   if (["rectangular-floor-mirror", "arched-floor-mirror"].includes(product.id)) return { ...product, priceGhs: 360 };
-  if (product.category === "Watches") return { ...product, priceGhs: 200, priceIsEstimate: true };
+  if (product.category === "Watches") return { ...product, priceGhs: product.priceGhs ?? 200, priceIsEstimate: true };
   if (watchSetIds.has(product.id)) return {
     ...product,
     priceGhs: 350,
@@ -118,12 +118,12 @@ const listings: Addition[] = [
   { photo: "watch-gold-octagonal-brown", name: "Gold Tone Octagonal Brown Strap Watch", category: "Watches" },
   { photo: "black-rectangular-watch-bracelet-set", name: "Black Rectangular Watch & Bracelet Gift Set", category: "Gift Sets" },
   { photo: "forever-message-necklace", name: "Forever Message Tag Necklace", category: "Necklaces", priceGhs: 100 },
-  { photo: "crown-name-bracelet", name: "Crown Name Bracelet", category: "Bracelets", priceGhs: 130 },
+  { photo: "crown-name-bracelet", name: "Crown Name Bracelet", category: "Bracelets", priceGhs: 150 },
   { photo: "rectangular-floor-mirror", name: "Rectangular Floor Mirror", category: "Home & Living" },
   { photo: "white-pattern-modular-wardrobe", name: "White Pattern Modular Wardrobe", category: "Home & Living" },
   { photo: "blue-compact-modular-wardrobe", name: "Blue Compact Modular Wardrobe", category: "Home & Living" },
   { photo: "personalized-gold-watch-bracelet-set", name: "Personalized Gold Tone Watch & Bracelet Gift Set", category: "Gift Sets" },
-  { photo: "watch-rose-mesh-brown-dial", name: "Rose Tone Mesh Brown Dial Watch", category: "Watches" },
+  { photo: "watch-rose-mesh-brown-dial", name: "Rose Tone Mesh Brown Dial Watch", category: "Watches", priceGhs: 250 },
   { photo: "joyceline-necklace-bracelet-set", name: "Joyceline Style Necklace & Bracelet Gift Set", category: "Gift Sets" },
   { photo: "built-in-cable-power-bank", name: "Built In Cable Power Bank", category: "Electronics" },
   { photo: "purple-two-tone-three-piece-set", name: "Purple Dial Two Tone Three Piece Gift Set", category: "Gift Sets" },
@@ -132,12 +132,12 @@ const listings: Addition[] = [
   { photo: "white-dial-gold-watch-bracelet-set", name: "White Dial Gold Tone Watch & Bracelet Gift Set", category: "Gift Sets" },
   { photo: "grey-bathroom-mat", name: "Grey Bathroom Mat", category: "Home & Living" },
   { photo: "carry-loop-power-bank", name: "Carry Loop Power Bank", category: "Electronics" },
-  { photo: "watch-blue-link-grey-dial", name: "Blue Link Grey Dial Watch", category: "Watches" },
+  { photo: "watch-blue-link-grey-dial", name: "Blue Link Grey Dial Watch", category: "Watches", priceGhs: 250 },
   { photo: "brown-pattern-modular-wardrobe", name: "Brown Pattern Modular Wardrobe", category: "Home & Living" },
   { photo: "open-link-cuff-bangle", name: "Open Link Cuff Bangle", category: "Jewelry" },
   { photo: "silver-nk-name-bracelet", name: "Silver NK Style Name Bracelet", category: "Bracelets", priceGhs: 130 },
   { photo: "engraved-plate-bracelet", name: "Engraved Plate Bracelet", category: "Bracelets", priceGhs: 130 },
-  { photo: "watch-black-detail-black-strap", name: "Black Detail Black Strap Watch", category: "Watches" },
+  { photo: "watch-black-detail-black-strap", name: "Black Detail Black Strap Watch", category: "Watches", priceGhs: 250 },
   { photo: "arched-floor-mirror", name: "Arched Floor Mirror", category: "Home & Living" },
   { photo: "round-heart-name-necklace", name: "Round & Heart Name Necklace", category: "Necklaces", priceGhs: 100 },
   { photo: "double-rail-clothes-rack", name: "Double Rail Clothes Rack", category: "Home & Living" },
@@ -149,10 +149,10 @@ const listings: Addition[] = [
   { photo: "earbuds-colour-styles", name: "Wireless Earbuds Colour Styles", category: "Electronics" },
   { photo: "flowing-cuff-bangle", name: "Flowing Cuff Bangle", category: "Jewelry" },
   { photo: "watch-black-octagonal-black-strap", name: "Black Octagonal Black Strap Watch", category: "Watches" },
-  { photo: "watch-black-floral-dial", name: "Black Floral Dial Watch", category: "Watches" },
+  { photo: "watch-black-floral-dial", name: "Black Floral Dial Watch", category: "Watches", priceGhs: 250 },
   { photo: "suction-style-power-bank", name: "Suction Style Power Bank", category: "Electronics" },
   { photo: "watch-two-tone-black-dial", name: "Two Tone Black Dial Watch", category: "Watches" },
-  { photo: "braided-initial-bracelet", name: "Braided Initial Bracelet", category: "Bracelets", priceGhs: 130 },
+  { photo: "braided-initial-bracelet", name: "Braided Initial Bracelet", category: "Bracelets", priceGhs: 120 },
   { photo: "heart-charm-name-necklace", name: "Heart Charm Name Necklace", category: "Necklaces", priceGhs: 100 },
   { photo: "red-dial-black-watch-bracelet-set", name: "Red Dial Black Watch & Bracelet Gift Set", category: "Gift Sets" },
   { photo: "brown-textured-curtains", name: "Brown Textured Curtains", category: "Curtains" },

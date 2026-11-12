@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, Circle, Crown, Gem, Gift, Heart, Info, MessageCircle, Milk, Package, PenLine, PlugZap, Search, ShoppingBag, Sparkles, Truck, Watch, X, type LucideIcon } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Check, Crown, Gift, Heart, Info, MessageCircle, Search, ShoppingBag, Sparkles, Truck, X } from "lucide-react";
 import { Logo, ShoppingBags } from "@/components/brand";
 import { availabilityLabel, store, type Product } from "@/lib/catalogue";
 import { useCatalogue } from "@/components/commerce-provider";
@@ -13,7 +13,6 @@ import { ProductDialogContent } from "./product-dialog";
 import { CartDrawer } from "./cart-drawer";
 import { BAG_CHANGED_EVENT, OPEN_BAG_EVENT } from "@/lib/bag-events";
 
-const categoryIcons: Record<string, LucideIcon> = { Bracelets: Heart, Necklaces: Gem, Rings: Circle, Electronics: PlugZap, Bottles: Milk, Diaries: BookOpen, Pens: PenLine, Bedsheets: Package, Jewelry: Sparkles, Watches: Watch, "Gift Sets": Gift, "Home & Living": Package, Curtains: Package };
 const contactUrl = createWhatsAppUrl(store.whatsappNumber, "Hello Big B Royale! I'd like to ask about your products, pricing, availability and delivery.");
 const personalised = new Set(["Bracelets", "Necklaces", "Rings", "Bottles", "Diaries", "Pens", "Gift Sets"]);
 const homeCategories = new Set(["Bedsheets", "Home & Living", "Curtains"]);
@@ -154,7 +153,6 @@ export function Storefront() {
         <div className="hero-art" aria-hidden="true"><span className="hero-art-caption">A LITTLE EVERYDAY LUXURY</span><ShoppingBags/><div className="hero-gift-note"><span><Gift size={22} strokeWidth={1.4}/></span><div>It’s the thought that counts.<small>Make the little things yours.</small></div><Sparkles size={17}/></div></div>
       </div><div className="hero-bottom-line store-container"><span>PERSONALISE YOUR EVERYDAY</span><span>EXPLORE A LITTLE MORE <ArrowDown size={12}/></span></div></section>
       <section className="store-benefits" aria-label="A thoughtful way to shop"><div className="store-container benefits-grid"><div><Gift size={25} strokeWidth={1.4}/><p>Personal touches<small>Share your own names, ideas & preferences</small></p></div><div><MessageCircle size={25} strokeWidth={1.4}/><p>A real conversation<small>Confirm the details directly on WhatsApp</small></p></div><div><Truck size={26} strokeWidth={1.4}/><p>Delivery, your way<small>Get delivery charges for your location</small></p></div></div></section>
-      <section className="category-section store-container" aria-labelledby="categories-heading"><div className="section-kicker"><span/>A LITTLE SOMETHING FOR EVERYONE</div><div className="section-heading"><h2 id="categories-heading">Shop by category</h2><a href="#collection" className="shop-text-link" onClick={() => selectCategory("All products")}>Explore all categories<ArrowUpRight size={16}/></a></div><div className="category-grid">{categories.map(category => { const Icon = categoryIcons[category] || Gift; return <a href="#collection" key={category} onClick={() => selectCategory(category)} className={filter === category ? "category-selected" : ""}><span className="category-icon"><Icon size={27} strokeWidth={1.3}/></span><span>{category}</span><ArrowUpRight className="category-arrow" size={13}/></a>; })}</div></section>
       <section className="collection-section" id="collection" aria-labelledby="collection-heading"><div className="store-container"><div className="section-kicker"><span/>THE BIG B ROYALE COLLECTION</div><div className="section-heading collection-heading"><div><h2 id="collection-heading">Browse products</h2><p>Choose a product to see its options.</p></div><label className="sort-label" htmlFor="product-sort">Sort by<select id="product-sort" value={sort} onChange={event => setSort(event.target.value)}><option value="featured">Featured</option><option value="name">Name: A–Z</option></select></label></div>
         <div className="collection-filters" role="group" aria-label="Filter products by category">{["All products", ...(products.some(product => personalised.has(product.category)) ? ["Personalised gifts"] : []), ...(products.some(product => homeCategories.has(product.category)) ? ["Home & living"] : []), ...categories].map(category => <button type="button" key={category} aria-pressed={filter === category} onClick={() => setFilter(category)}>{category}</button>)}</div>
         {(sampleListings || placeholderImages) && <div className="catalogue-notice"><Info size={17}/><p><strong>Product information</strong> {sampleListings ? "Sample listings are marked." : ""} {placeholderImages ? "Placeholder images are labelled." : ""} Confirm availability on WhatsApp.</p></div>}
