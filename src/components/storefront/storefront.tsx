@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Check, Crown, Gift, Heart, Info, MessageCircle, Search, ShoppingBag, Sparkles, Truck, X } from "lucide-react";
-import { Logo, ShoppingBags } from "@/components/brand";
+import { Logo } from "@/components/brand";
+import { productImageSrc } from "@/lib/product-image";
 import { availabilityLabel, store, type Product } from "@/lib/catalogue";
 import { useCatalogue } from "@/components/commerce-provider";
 import { useSavedProducts } from "@/hooks/use-saved-products";
@@ -20,6 +22,7 @@ const homeCategories = new Set(["Bedsheets", "Home & Living", "Curtains"]);
 export function Storefront() {
   const { products, loading } = useCatalogue();
   const categories = [...new Set(products.map(product => product.category))];
+  const heroProduct = products.find(product => product.image.includes("personalized-gold-watch-bracelet-set")) ?? products.find(product => !product.imageIsPlaceholder);
   const saved = useSavedProducts();
   const [filter, setFilter] = useState("All products");
   const [search, setSearch] = useState("");
@@ -146,12 +149,12 @@ export function Storefront() {
       <div className="store-announcement"><span>Shop online. Confirm your order on WhatsApp.</span></div>
       <div className="shop-search-area store-container"><form className="store-search" role="search" onSubmit={event => { event.preventDefault(); event.currentTarget.querySelector("input")?.blur(); document.getElementById("collection")?.scrollIntoView({ behavior: "auto" }); }}>
           <Search size={19} aria-hidden="true"/><input aria-label="Search products" inputMode="search" enterKeyHint="search" placeholder="Search products" value={search} onChange={event => { setSearch(event.target.value); setFilter("All products"); }}/>
-          {search ? <button type="button" aria-label="Clear search" onClick={() => setSearch("")}><X size={17}/></button> : <button type="submit" aria-label="Search the collection"></button>}
+          {search ? <button type="button" aria-label="Clear search" onClick={() => setSearch("")}><X size={17}/></button> : <button type="submit" aria-label="Search the collection"><Search size={18}/></button>}
         </form></div>
       <section className="store-hero" aria-labelledby="store-hero-title"><div className="store-container hero-grid">
         <div className="hero-copy"><span className="hero-eyebrow"><span/>THOUGHTFUL FINDS. PERSONAL TOUCHES.</span><h1 id="store-hero-title">Shop Big B Royale</h1><p>Personalised gifts, watches and home essentials.</p><div className="hero-actions"><a href="#collection" className="shop-button shop-button-white" onClick={() => selectCategory("All products")}>Browse products</a><a className="hero-how-link" href="/about/#how-to-order">How to order</a></div><span className="hero-footnote"><MessageCircle size={15}/>Choose it. Personalise it. Let’s talk on WhatsApp.</span></div>
-        <div className="hero-art" aria-hidden="true"><span className="hero-art-caption">A LITTLE EVERYDAY LUXURY</span><ShoppingBags/><div className="hero-gift-note"><span><Gift size={22} strokeWidth={1.4}/></span><div>It’s the thought that counts.<small>Make the little things yours.</small></div><Sparkles size={17}/></div></div>
-      </div><div className="hero-bottom-line store-container"><span>PERSONALISE YOUR EVERYDAY</span><span>EXPLORE A LITTLE MORE </span></div></section>
+        {heroProduct && <button type="button" className="shop-hero-product" onClick={() => setSelected(heroProduct)} aria-label={`Explore ${heroProduct.name}`}><Image src={productImageSrc(heroProduct.image)} alt={heroProduct.name} width={400} height={440} sizes="(max-width: 760px) 1px, 320px"/><span><small>THOUGHTFULLY CHOSEN</small>Personally yours.</span></button>}
+      </div><div className="hero-bottom-line store-container"><span>PERSONALISE YOUR EVERYDAY</span><span>EXPLORE A LITTLE MORE</span></div></section>
       <section className="store-benefits" aria-label="A thoughtful way to shop"><div className="store-container benefits-grid"><div><Gift size={25} strokeWidth={1.4}/><p>Personal touches<small>Share your own names, ideas & preferences</small></p></div><div><MessageCircle size={25} strokeWidth={1.4}/><p>A real conversation<small>Confirm the details directly on WhatsApp</small></p></div><div><Truck size={26} strokeWidth={1.4}/><p>Delivery, your way<small>Get delivery charges for your location</small></p></div></div></section>
       <section className="collection-section" id="collection" aria-labelledby="collection-heading"><div className="store-container"><div className="section-kicker"><span/>THE BIG B ROYALE COLLECTION</div><div className="section-heading collection-heading"><div><h2 id="collection-heading">Browse products</h2><p>Choose a product to see its options.</p></div><label className="sort-label" htmlFor="product-sort">Sort by<select id="product-sort" value={sort} onChange={event => setSort(event.target.value)}><option value="featured">Featured</option><option value="name">Name: A–Z</option></select></label></div>
         <div className="collection-filters" role="group" aria-label="Filter products by category">{["All products", ...(products.some(product => personalised.has(product.category)) ? ["Personalised gifts"] : []), ...(products.some(product => homeCategories.has(product.category)) ? ["Home & living"] : []), ...categories].map(category => <button type="button" key={category} aria-pressed={filter === category} onClick={() => setFilter(category)}>{category}</button>)}</div>
@@ -164,7 +167,6 @@ export function Storefront() {
       <section className="store-note store-container" aria-labelledby="story-heading"><span><Crown size={25} strokeWidth={1.2}/></span><h2 id="story-heading">Thoughtfully chosen. Personally yours.</h2><p>From a name on a necklace to a note in a diary, the small details make it personal.<br/>Welcome to Big B Royale. A little everyday luxury, with a touch of you.</p><span className="note-signature">Big B Royale</span></section>
     </main>
     <footer className="store-footer"><div className="store-container"><div className="footer-grid"><div className="footer-brand"><Logo light/><p>Personalised gifts and everyday essentials.</p><span className="footer-ghana"><span className="ghana-flag" aria-hidden="true"><span>★</span></span>Proudly Ghanaian · Ghana / GHS</span></div><div><h2>Explore</h2><Link href="/">Home</Link><a href="#collection" onClick={() => selectCategory("All products")}>Shop the collection</a><a href="#collection" onClick={() => selectCategory("Personalised gifts")}>Personalised gifts</a><a href="/about/#how-to-order">How to order</a><a href="#shopping-help">Delivery & help</a><Link href="/account/">Your account</Link><Link href="/account/?tab=orders">Track orders</Link></div><div><h2>Let’s talk</h2><a href={contactUrl} target="_blank" rel="noopener noreferrer">WhatsApp us</a><a href={contactUrl} target="_blank" rel="noopener noreferrer">{store.whatsappDisplay}</a><p>Questions about a product or your order? Send us a message.</p></div><div className="footer-delivery"><Truck size={24} strokeWidth={1.3}/><h2>A note on delivery</h2><p>{store.delivery}</p><span>All quotes are in Ghana Cedis (GHS).</span></div></div><div className="footer-bottom"><span>© 2026 Big B Royale. All rights reserved.</span><span></span><a href="#store-hero-title">Back to top</a></div></div></footer>
-    <a className="shop-back-top" href="#shop-top" aria-label="Back to top">Top</a>
     <a className="floating-whatsapp" href={contactUrl} target="_blank" rel="noopener noreferrer" aria-label="Chat with Big B Royale on WhatsApp"><MessageCircle size={21}/><span>WhatsApp</span></a>
     <div className="shop-toast-region" role="status" aria-live="polite" aria-atomic="true">{(notice || saved.error) && <div className="shop-toast"><Check size={18}/><span>{saved.error || notice}{saved.error && !saved.user && <> <Link href="/login/">Sign in</Link></>}</span><button type="button" aria-label="Dismiss notification" onClick={() => { setNotice(""); saved.clearError(); }}><X size={16}/></button></div>}</div>
     <dialog className="shop-dialog product-dialog" ref={productDialog} aria-labelledby="product-dialog-title" onClose={() => setSelected(null)}>{selected && <ProductDialogContent key={selected.id} product={selected} ready={cartReady} onClose={() => productDialog.current?.close()} onAdd={addItem}/>}</dialog>

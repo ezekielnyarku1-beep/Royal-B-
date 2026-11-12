@@ -4,14 +4,15 @@
 /* Royal palette: edit these values to recolour every page. */
 :root {
   color-scheme: light;
-  --blue: #12358A;
-  --deep-blue: #0B235B;
+  --blue: #163467;
+  --deep-blue: #102349;
+  --paper: #F8F6F0;
   --white: #FFFFFF;
-  --gold: #C5A04A;
-  --ink: #142B50;
-  --muted: #526581;
-  --surface: #F3F6FC;
-  --border: #D7E1F0;
+  --gold: #B99A57;
+  --ink: #172846;
+  --muted: #566278;
+  --surface: #F0EEE8;
+  --border: #DEDED7;
   --blue-soft: #B9CAE5;
   --error: #A52C36;
   --error-border: #D88C93;

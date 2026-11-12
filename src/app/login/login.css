@@ -84,3 +84,11 @@
 @media(max-width:360px){.login-redesign .form-stage{padding:22px 14px}.login-redesign .auth-content{padding:26px 19px}.login-redesign .auth-heading h2{font-size:33px}.login-redesign .form-header{padding-inline:18px}.login-redesign .form-options{column-gap:6px}.login-redesign .remember,.login-redesign .text-button{font-size:13px}}
 /* The shared site header supplies navigation on every screen size. */
 .login-redesign.auth-page, .login-redesign .form-side { min-height: calc(100svh - var(--site-header-height)); }
+
+/* Match the editorial storefront while retaining the account form layout. */
+.login-redesign.auth-page, .login-redesign .form-side { background: var(--paper); }
+.login-redesign .auth-content { border-radius: 0; box-shadow: none; }
+.login-redesign .auth-heading h2 { font-family: Georgia, serif; font-weight: 400; letter-spacing: -1px; }
+.login-founder-story h1 { font-family: Georgia, serif; font-weight: 400; font-size: clamp(38px, 4vw, 56px); }
+.login-founder-panel { background: var(--deep-blue); }
+.login-founder-portrait img { border-radius: 48% 48% 0 0; outline: none; }

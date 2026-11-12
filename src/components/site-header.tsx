@@ -35,7 +35,7 @@ export function SiteHeader() {
     { label: "Account", href: user ? "/account/" : "/login/", active: ["/login", "/account", "/admin"].includes(pathname), Icon: UserRound },
     { label: "About", href: "/about/", active: pathname === "/about", Icon: Info },
   ];
-  return <header className="site-header">
+  return <header className="site-header" data-campaign={pathname === "/" || pathname === "/welcome" ? "true" : undefined}>
     <div className="site-header-inner">
       <Link href="/" className="site-logo" aria-label="Big B Royale home"><Logo/></Link>
       <nav className="site-main-nav" aria-label="Main navigation">{links.map(({ label, href, active, Icon }) => <Link key={label} href={href} aria-current={active ? "page" : undefined}><Icon size={19} aria-hidden="true"/><span>{label}</span></Link>)}</nav>
