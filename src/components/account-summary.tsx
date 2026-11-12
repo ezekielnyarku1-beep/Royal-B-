@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, LogOut, ShieldCheck } from "lucide-react";
+import { LogOut, ShieldCheck } from "lucide-react";
 import { authAdapter, type AccountUser } from "@/lib/auth";
 
 export function AccountSummary({ user }: { user: AccountUser }) {
@@ -21,8 +21,8 @@ export function AccountSummary({ user }: { user: AccountUser }) {
     <div className="welcome-icon" aria-hidden="true"><ShieldCheck size={25} strokeWidth={1.5}/></div>
     <div className="auth-heading"><h2 id="account-title">Your account</h2><p>{name ? `Good to see you, ${name}.` : "Good to see you again."}</p></div>
     <div className="account-details"><span>Signed in as</span><p>{user.email || "Big B Royale member"}</p></div>
-    <Link href="/shop/" className="primary-button account-continue">Continue shopping<ArrowRight size={18}/></Link>
-    <Link href="/account/" className="account-signout">Manage my account<ArrowRight size={18}/></Link>
+    <Link href="/shop/" className="primary-button account-continue">Continue shopping</Link>
+    <Link href="/account/" className="account-signout">Manage my account</Link>
     <button type="button" className="account-signout" disabled={pending} onClick={signOut}><LogOut size={17}/>{pending ? "Signing out…" : "Sign out"}</button>
     {error && <p className="field-error" role="alert">{error}</p>}
     <p className="account-session-note">Sign out ends this browser’s session. Your shopping bag stays saved on this device.</p>

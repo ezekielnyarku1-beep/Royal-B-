@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { AuthForm } from "@/components/auth-form";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import "./login.css";
@@ -20,7 +19,7 @@ export default function LoginPage() {
           <Image unoptimized src="/landing/photo3-480.webp" sizes="260px" width={720} height={1080} alt="The founder of Big B Royale wearing a black-and-gold dress."/>
           <figcaption><strong>The founder behind Big B Royale</strong><span>A Ghanaian business. A personal connection.</span></figcaption>
         </figure>
-        <Link className="login-founder-more" href="/">Get to know Big B Royale<ArrowLeft size={17} aria-hidden="true"/></Link>
+        <Link className="login-founder-more" href="/">Get to know Big B Royale</Link>
       </aside>
       <section className="form-side" aria-label="Your Big B Royale account">
         <div className="form-stage"><AuthForm /></div>

@@ -1,4 +1,4 @@
-import { ArrowUpRight, Crown, PackageCheck, Sparkles } from "lucide-react";
+import { Crown, PackageCheck, Sparkles } from "lucide-react";
 
 export function Logo({ light = false }: { light?: boolean }) {
   return <div className={`brand-logo ${light ? "brand-logo-light" : ""}`} role="img" aria-label="Big B Royale">
@@ -53,7 +53,7 @@ export function BrandPanel() {
       <h1>Big B Royale</h1>
       <p>Personalised gifts, watches<br />and home essentials.</p>
     </div>
-    <div className="art-wrap"><ShoppingBags /><div className="art-note"><span className="note-icon"><Sparkles size={18}/></span><div>Made for you.<small>Shop Big B Royale.</small></div><ArrowUpRight size={18} className="note-arrow"/></div></div>
+    <div className="art-wrap"><ShoppingBags /><div className="art-note"><span className="note-icon"><Sparkles size={18}/></span><div>Made for you.<small>Shop Big B Royale.</small></div></div></div>
     <div className="brand-bottom"><div><PackageCheck size={19} strokeWidth={1.5}/><span>Browse products and order on WhatsApp.</span></div><span className="brand-bottom-line" /></div>
   </aside>;
 }

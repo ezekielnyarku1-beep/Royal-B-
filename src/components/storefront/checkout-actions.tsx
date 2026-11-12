@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, MessageCircle } from "lucide-react";
+import { Check, MessageCircle } from "lucide-react";
 import { useAccount } from "@/hooks/use-account";
 import { useCatalogue } from "@/components/commerce-provider";
 import { commerceError, saveOrderRequest } from "@/lib/commerce";
@@ -36,7 +36,7 @@ export function CheckoutActions({ items, message }: { items: CartItem[]; message
     {user && live && !order && <><button className="checkout-save-request" type="button" disabled={pending} onClick={save}>{pending ? "Saving request…" : "Save request for tracking"}</button><p>Optional. Save a reference and follow updates in your account.</p></>}
     {order && order.user_id === user?.id && <div className="saved-order-note" role="status"><Check size={18}/><div><strong>{order.reference}</strong><p>Request saved. Send it on WhatsApp for confirmation.</p><Link href="/account/?tab=orders">View your orders</Link></div></div>}
     {error && <p className="shop-inline-error" role="alert">{error}</p>}
-    <a className="shop-button" href={createWhatsAppUrl(store.whatsappNumber, order ? orderWhatsAppMessage(order) : message)} target="_blank" rel="noopener noreferrer"><MessageCircle size={19}/>Continue on WhatsApp<ArrowRight size={17}/></a>
+    <a className="shop-button" href={createWhatsAppUrl(store.whatsappNumber, order ? orderWhatsAppMessage(order) : message)} target="_blank" rel="noopener noreferrer"><MessageCircle size={19}/>Continue on WhatsApp</a>
     {!user && <Link className="checkout-account-link" href="/login/">Sign in to save and track requests</Link>}
   </div>;
 }

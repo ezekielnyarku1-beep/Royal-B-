@@ -15,7 +15,6 @@
 .login-founder-portrait figcaption strong{display:block;font-size:15px;font-weight:600}
 .login-founder-portrait figcaption span{display:block;font-size:14px;color:var(--border);margin-top:5px}
 .login-founder-more{display:inline-flex;align-items:center;gap:12px;min-height:44px;margin:24px auto 0;color:var(--white);text-underline-offset:5px;font-size:14px}
-.login-founder-more svg{transform:rotate(180deg)}
 .login-redesign .form-side{padding:28px clamp(24px,4vw,64px) 20px;min-height:100svh;background:transparent}
 .login-redesign .form-header{justify-content:flex-end;min-height:44px}
 .login-home-link{display:inline-flex;align-items:center;gap:9px;min-height:44px;color:var(--blue);font-size:15px;text-decoration:none}

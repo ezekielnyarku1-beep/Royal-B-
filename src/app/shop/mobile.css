@@ -63,8 +63,6 @@
   .section-heading h2 { font-size: 24px; }
   .section-kicker { font-size: 9px; line-height: 1.6; }
   .section-heading > .shop-text-link { min-height: 44px; font-size: 12px; }
-  .category-grid { display: flex; overflow-x: auto; gap: 10px; margin-top: 12px; padding: 4px 3px 10px; margin-inline: -3px; scroll-snap-type: x proximity; }
-  .category-grid > a { flex: 0 0 86px; padding: 12px 6px; font-size: 12px; gap: 8px; scroll-snap-align: start; }
   .category-icon { width: 30px; height: 30px; }
   .collection-section, #how-to-order, #store-hero-title { scroll-margin-top: calc(140px + env(safe-area-inset-top)); }
   .collection-section { padding-block: 24px 32px; }

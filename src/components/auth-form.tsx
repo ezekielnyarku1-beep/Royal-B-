@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Check, CircleAlert, KeyRound, LoaderCircle, LockKeyhole, Mail, UserRound, X } from "lucide-react";
+import { Check, CircleAlert, KeyRound, LoaderCircle, LockKeyhole, Mail, UserRound, X } from "lucide-react";
 import { FormField } from "./form-field";
 import { authAdapter, authErrorMessage, authErrorReference } from "@/lib/auth";
 import { useAccount } from "@/hooks/use-account";
@@ -130,7 +130,7 @@ export function AuthForm() {
         {!login && <FormField {...fieldProps("confirmPassword")} label="Confirm password" icon={LockKeyhole} type="password" placeholder="Re-enter your password" autoComplete="new-password"/>}
         {login && <div className="form-options"><label className="remember"><input type="checkbox" checked={values.remember} disabled={pending} onChange={e => setValues(v => ({ ...v, remember: e.target.checked }))}/><span>Remember me</span></label><button className="text-button" type="button" onClick={() => dialog.current?.showModal()}>Forgot password?</button></div>}
         <div aria-live="polite" aria-atomic="true">{notice && <div className={`form-notice ${notice.error ? "notice-error" : ""}`}><CircleAlert size={17} aria-hidden="true"/><p>{notice.message}{notice.reference && <small className="auth-error-reference">Support reference: {notice.reference}</small>}</p></div>}</div>
-        <button type="submit" className="primary-button" disabled={pending}>{pending ? <><LoaderCircle size={18} className="animate-spin"/>Please wait…</> : <>{login ? "Log in" : "Create account"}<ArrowRight size={18}/></>}</button>
+        <button type="submit" className="primary-button" disabled={pending}>{pending ? <><LoaderCircle size={18} className="animate-spin"/>Please wait…</> : login ? "Log in" : "Create account"}</button>
         <div className="auth-divider"><span>or continue with</span></div>
         <button type="button" className="google-button" disabled={pending} onClick={signInWithGoogle}>
           {pendingAction === "google" ? <LoaderCircle size={19} className="animate-spin" aria-hidden="true"/> : <GoogleMark/>}
@@ -138,7 +138,7 @@ export function AuthForm() {
         </button>
       </form>
     </div>
-    <p className="switch-prompt">{login ? "New here?" : "Already have an account?"} <button type="button" className="text-button" disabled={pending} onClick={() => { switchMode(login ? "signup" : "login"); document.getElementById(login ? "tab-signup" : "tab-login")?.focus(); }}>{login ? "Create an account" : "Log in"}<ArrowRight size={13}/></button></p>
+    <p className="switch-prompt">{login ? "New here?" : "Already have an account?"} <button type="button" className="text-button" disabled={pending} onClick={() => { switchMode(login ? "signup" : "login"); document.getElementById(login ? "tab-signup" : "tab-login")?.focus(); }}>{login ? "Create an account" : "Log in"}</button></p>
     <ResetPasswordDialog dialogRef={dialog} email={values.email}/>
   </div>;
 }
@@ -191,8 +191,8 @@ function PasswordRecoveryForm({ onComplete }: { onComplete: () => void }) {
       <FormField id="recovery-confirm-password" name="confirmPassword" label="Confirm new password" icon={LockKeyhole} type="password" value={confirmPassword} placeholder="Re-enter your new password" autoComplete="new-password" required disabled={pending} error={errors.confirmPassword} onChange={event => { setConfirmPassword(event.target.value); setErrors(previous => ({ ...previous, confirmPassword: undefined })); setNotice(null); }} />
       <div aria-live="polite" aria-atomic="true">{notice && <div className={`form-notice ${notice.error ? "notice-error" : ""}`}><CircleAlert size={17} aria-hidden="true"/><p>{notice.message}</p></div>}</div>
       {notice?.error === false
-        ? <button type="button" className="primary-button" onClick={onComplete}>Continue to your account<ArrowRight size={18}/></button>
-        : <button type="submit" className="primary-button" disabled={pending}>{pending ? <><LoaderCircle size={18} className="animate-spin"/>Please wait…</> : <>Update password<ArrowRight size={18}/></>}</button>}
+        ? <button type="button" className="primary-button" onClick={onComplete}>Continue to your account</button>
+        : <button type="submit" className="primary-button" disabled={pending}>{pending ? <><LoaderCircle size={18} className="animate-spin"/>Please wait…</> : "Update password"}</button>}
     </form>
   </div>;
 }
@@ -218,7 +218,7 @@ function ResetPasswordDialog({ dialogRef, email }: { dialogRef: React.RefObject<
     <form noValidate onSubmit={submit} aria-busy={pending}>
       <FormField id="reset-email" label="Email address" icon={Mail} type="email" value={value} autoComplete="email" placeholder={email || "you@example.com"} onChange={e => { setValue(e.target.value); setError(undefined); setNotice(null); }} error={error} required disabled={pending}/>
       <div aria-live="polite" aria-atomic="true">{notice && <div className={`form-notice ${notice.error ? "notice-error" : ""}`}><CircleAlert size={17}/><p>{notice.message}</p></div>}</div>
-      <button className="primary-button" type="submit" disabled={pending}>{pending ? "Please wait…" : "Send reset link"}<ArrowRight size={18}/></button>
+      <button className="primary-button" type="submit" disabled={pending}>{pending ? "Please wait…" : "Send reset link"}</button>
     </form>
     <button className="text-button back-button" type="button" onClick={() => dialogRef.current?.close()}>Back to log in</button>
   </dialog>;

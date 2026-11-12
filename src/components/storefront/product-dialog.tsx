@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ArrowRight, Info, ShoppingBag, X } from "lucide-react";
+import { Info, ShoppingBag, X } from "lucide-react";
 import { availabilityLabel, priceLabel, productImages, type Product } from "@/lib/catalogue";
 import { MAX_CUSTOMIZATION_LENGTH, MAX_QUANTITY, type CartItem } from "@/lib/cart";
 import { QuantityControl } from "./quantity-control";
@@ -34,7 +34,7 @@ export function ProductDialogContent({ product, ready = true, onClose, onAdd }: 
         <div className="product-quantity-row"><span className="shop-label">Quantity</span><QuantityControl value={quantity} onChange={value => { setQuantity(value); setError(""); }} name={product.name}/></div>
         <p className="quantity-limit-note">Maximum {MAX_QUANTITY} per personalisation request. This is an enquiry limit; availability is confirmed by the seller.</p>
         {error && <p className="shop-inline-error" role="alert">{error}</p>}
-        <div className="product-purchase-bar"><button type="submit" className="shop-button" disabled={!ready || availabilityLabel(product) === "Unavailable"} aria-busy={!ready}><ShoppingBag size={18}/>{!ready ? "Loading bag…" : availabilityLabel(product) === "Unavailable" ? "Currently unavailable" : "Add to bag"}<ArrowRight size={17}/></button></div>
+        <div className="product-purchase-bar"><button type="submit" className="shop-button" disabled={!ready || availabilityLabel(product) === "Unavailable"} aria-busy={!ready}><ShoppingBag size={18}/>{!ready ? "Loading bag…" : availabilityLabel(product) === "Unavailable" ? "Currently unavailable" : "Add to bag"}</button></div>
         <div className="product-disclaimer"><Info size={16}/><p>{product.isSample ? "This is a sample listing. " : ""}Prices, availability, styles and delivery charges are confirmed by the seller on WhatsApp. No online payment is required.</p></div>
       </form>
     </div>

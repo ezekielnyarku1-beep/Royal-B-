@@ -73,7 +73,6 @@ dialog[open]::backdrop { opacity: 1; }
 .note-icon { background: var(--white); color: var(--gold); border-radius: 50%; width: 36px; height: 36px; flex-shrink: 0; display: grid; place-items: center; }
 .art-note > div { font-size: 12px; font-weight: 600; }
 .art-note small { display: block; color: var(--muted); font-size: 10px; margin-top: 4px; font-weight: 400; }
-.note-arrow { margin-left: auto; color: var(--muted); }
 .brand-bottom { margin-top: auto; }
 .brand-bottom > div { display: flex; gap: 9px; align-items: center; color: var(--brand-secondary); font-size: 10px; letter-spacing: .1px; }
 .brand-bottom svg { color: var(--gold); }

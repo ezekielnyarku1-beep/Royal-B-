@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ArrowRight, ShoppingBag, Trash2, X } from "lucide-react";
+import { ShoppingBag, Trash2, X } from "lucide-react";
 import { availabilityLabel, store, priceLabel, formatPrice, lineSubtotalGhs, productImages, unitPriceGhs, type Product } from "@/lib/catalogue";
 import { cartLineKey, cartPricing, type CartItem } from "@/lib/cart";
 import { createOrderMessage } from "@/lib/whatsapp";
@@ -48,6 +48,6 @@ export function CartDrawer({ items, products, ready = true, onClose, onUpdate, o
         <CheckoutActions items={items} message={message}/>
         <small>Opens a draft for you to review and send. Your order is confirmed with the seller; no online payment is taken.</small>
       </footer>
-    </> : <div className="empty-bag"><div><ShoppingBag size={36} strokeWidth={1.2}/></div><h3>Your bag is empty.</h3><p>Add a product to get started.</p><button type="button" className="shop-button" onClick={onClose}>Shop products<ArrowRight size={17}/></button></div>}
+    </> : <div className="empty-bag"><div><ShoppingBag size={36} strokeWidth={1.2}/></div><h3>Your bag is empty.</h3><p>Add a product to get started.</p><button type="button" className="shop-button" onClick={onClose}>Shop products</button></div>}
   </div>;
 }
