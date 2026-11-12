@@ -114,6 +114,7 @@ export function HomeCarousel() {
           </div>
         ))}
       </div>
+      <div className="campaign-overlay" aria-hidden="true"/>
       <div className="campaign-content">
         <p className="campaign-eyebrow"><span aria-hidden="true"/>PERSONAL TOUCHES. PROUDLY GHANAIAN.</p>
         <h1 id="intro-welcome-title"><em>Big B Royale.</em></h1>

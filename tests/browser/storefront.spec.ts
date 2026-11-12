@@ -11,7 +11,7 @@ test("shows supplied photos/prices and clearly labels the remaining sample produ
   await page.goto("/shop/");
   await expect(page.getByRole("heading", { name: "Shop Big B Royale" })).toBeVisible();
   await expect(page.locator(".product-card")).toHaveCount(products.length);
-  for (const [name, price] of [["Customized Bracelets", "GH₵130.00"], ["Personalized Name Necklaces", "GH₵100.00"], ["Photo-Customized Necklace", "GH₵140.00"], ["Customized Rings", "GH₵50.00"], ["Phone Charger", "GH₵150.00"]]) {
+  for (const [name, price] of [["Customized Bracelets", "GH₵130.00"], ["Personalized Name Necklaces", "GH₵100.00"], ["Photo-Customized Necklace", "GH₵140.00"], ["Customized Rings", "GH₵50.00"], ["Phone Charger", "GH₵65.00"]]) {
     await expect(page.locator(".product-card").filter({ has: page.getByRole("heading", { name, exact: true }) }).locator(".product-price")).toHaveText(price.replace("GH₵", "GH₵ "));
   }
   await expect(page.locator(".product-card").filter({ has: page.getByRole("heading", { name: "Wireless Earbuds", exact: true }) }).locator(".product-price")).toHaveText("GH₵ 45.00");

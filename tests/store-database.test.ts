@@ -42,19 +42,25 @@ after(async () => { await db.close(); });
 test("all catalogue entries seed correctly and public visitors only see active products", async () => {
   await db.exec(readFileSync("supabase/migrations/202610300002_seed_catalogue.sql", "utf8"));
   await db.exec(readFileSync("supabase/migrations/202611120001_update_catalogue_prices.sql", "utf8"));
+  await db.exec(readFileSync("supabase/migrations/202611120002_update_black_blue_sports_watch_price.sql", "utf8"));
+  await db.exec(readFileSync("supabase/migrations/202611120003_update_phone_charger_price.sql", "utf8"));
+  await db.exec(readFileSync("supabase/migrations/202611120004_update_tan_strap_minimal_watch_price.sql", "utf8"));
   const count = await db.query<{ count: number }>("select count(*)::int as count from public.store_products");
   assert.equal(count.rows[0].count, products.length);
   const updatedPrices = await db.query<{ id: string; price: number }>(
-    "select id, (details->>'priceGhs')::int as price from public.store_products where id in ('braided-initial-bracelet', 'crown-name-bracelet', 'fashion-watches', 'watch-black-detail-black-strap', 'watch-black-floral-dial', 'watch-blue-link-grey-dial', 'watch-rose-mesh-brown-dial', 'wireless-earbuds') order by id",
+    "select id, (details->>'priceGhs')::int as price from public.store_products where id in ('braided-initial-bracelet', 'crown-name-bracelet', 'fashion-watches', 'phone-charger', 'watch-black-detail-black-strap', 'watch-black-floral-dial', 'watch-blue-link-grey-dial', 'watch-rose-mesh-brown-dial', 'watch-black-blue-sports', 'watch-tan-minimal', 'wireless-earbuds') order by id",
   );
   assert.deepEqual(updatedPrices.rows, [
     { id: "braided-initial-bracelet", price: 120 },
     { id: "crown-name-bracelet", price: 150 },
     { id: "fashion-watches", price: 250 },
+    { id: "phone-charger", price: 65 },
+    { id: "watch-black-blue-sports", price: 180 },
     { id: "watch-black-detail-black-strap", price: 250 },
     { id: "watch-black-floral-dial", price: 250 },
     { id: "watch-blue-link-grey-dial", price: 250 },
     { id: "watch-rose-mesh-brown-dial", price: 250 },
+    { id: "watch-tan-minimal", price: 180 },
     { id: "wireless-earbuds", price: 45 },
   ]);
   await db.query("insert into public.store_products(id,details,active) values('hidden-owner-test',$1,false)", [JSON.stringify({ ...product, id: "hidden-owner-test" })]);

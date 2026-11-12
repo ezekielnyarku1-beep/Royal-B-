@@ -69,7 +69,7 @@ const baseProducts: Product[] = [
     customizationLabel: "Name, ring size and style", customizationHint: "Engraving text, ring size and your preferred photo or finish",
   },
   {
-    id: "phone-charger", name: "Phone Charger", category: "Electronics", priceGhs: 150,
+    id: "phone-charger", name: "Phone Charger", category: "Electronics", priceGhs: 65,
     description: "The charger shown in the supplied product photo. Share your phone model so the seller can confirm the connection, compatibility and package contents.",
     image: "/products/collection/phone-charger.jpg", imageIsPlaceholder: false, isSample: false, availability: "confirm",
     customizationLabel: "Phone model and connection", customizationHint: "Your phone model, charging connection and any questions",
